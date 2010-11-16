@@ -2,8 +2,8 @@
 <mx:Application 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 	
 	layout="absolute"
-	width="840" 
-	height="600"
+	width="800" 
+	height="400"
 	frameRate="100"
 	creationComplete="creationComplete()"
 	enterFrame="enterFrame(event)"
@@ -19,15 +19,32 @@
 			enterState="enterGame(event)"
         	exitState="exitGame(event)">
         	<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Button right="50" bottom="20" label="Exit to Menu" id="btnExit" click="btnExitClicked(event)" width="150" height="30"/>
+				<mx:Button right="30" top="20"  color="Green"  label="Выбрать растение" id="btnGive" click="btnGiveClicked(event)" width="150" height="30"/>
 			</mx:AddChild>
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Label left="10" top="10" id="labelMouseX"/>
+				<mx:Button right="30" top="60" color="Green"  label="Собрать растение" id="btnTake" width="150" height="30"/>
 			</mx:AddChild>
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Label left="10" top="20" id="labelMouseY"/>
-			</mx:AddChild>							
-		</mx:State>		
+				<mx:Button right="30" top="100"  color="Green"  label="Вырастить растение" id="btnGrow" width="150" height="30"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
+				<mx:Button right="30" top="140"  color="Green"  label="Выйти в Меню" id="btnExit" click="btnExitClicked(event)" width="150" height="30"/>
+			</mx:AddChild>					
+			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
+				<mx:HBox x="{Application.application.width/2-hboxGives.width/2}" 
+						 y="{Application.application.height/2-hboxGives.height/2}" id="hboxGives" visible="false">
+					<mx:Image width="100" height="100" source="Media/Entities/potato/5.png" click="givesIDClicked(1)" />	
+					<mx:Image width="100" height="100" source="Media/Entities/clover/5.png" click="givesIDClicked(2)"/>
+					<mx:Image width="100" height="100" source="Media/Entities/Sunflower/5.png" click="givesIDClicked(3)"/>	
+				</mx:HBox>
+			</mx:AddChild>						
+			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
+				<mx:Label left="10" top="10" color="White" id="labelMouseX"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
+				<mx:Label left="10" top="20" color="White" id="labelMouseY"/>
+			</mx:AddChild>		
+		</mx:State>
 		<mx:State name="MainMenu">
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
 				<mx:Button x="{this.width / 2 - 10}" y="{this.height / 2 - 10}" label="Start" id="btnStart" click="btnStartGameClicked(event)" width="90" height="30"/>
@@ -35,21 +52,21 @@
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
 				<mx:Label left="30" top="10" text="Farm adventures" fontSize="20" fontWeight="bold"/>
 			</mx:AddChild>		
-		</mx:State>
+		</mx:State>			
 	</mx:states>
 		
 	<mx:Canvas x="0" y="0" width="100%" height="100%" id="myCanvas"/>
-	<mx:Label right="30" top="10" fontSize="20" fontWeight="bold" text="Demo version" />
+	<mx:Label right="30" bottom="10" fontSize="20" fontWeight="bold" text="Demo version" />
 	
 	<mx:Script>
 	<![CDATA[  
 	
 		// Namespaces
-		import Core.*
+		import Core.*		
 	
 		protected var inGame:Boolean = false;
 		protected var currentLevel:int = 1;
-	
+				
 		// Erases when application was completly loaded
 		public function creationComplete():void
 	    {												
@@ -64,12 +81,13 @@
 	    		/// DEBUG ONLY
 	    		labelMouseX.text = this.mouseX.toString()
 				labelMouseY.text = this.mouseY.toString()								
-				
-				/// Game Loop	    		    
-	    		GameObjectManager.Instance.enterFrame();	    			    	
-	    		myCanvas.graphics.beginBitmapFill(GameObjectManager.Instance.backBuffer, null, false, false);
-	    		myCanvas.graphics.drawRect(0 , 0, this.width, this.height);
-	    		myCanvas.graphics.endFill();
+					
+				/// Game Loop				    		   
+		    	GameObjectManager.Instance.enterFrame();		  			    			    	
+		    	myCanvas.graphics.beginBitmapFill(GameObjectManager.Instance.backBuffer, null, false, false);
+		    	myCanvas.graphics.drawRect(0 , 0, this.width, this.height);
+		    	myCanvas.graphics.endFill();
+	   			
 	    	}	
 	    }
 	    
@@ -123,8 +141,21 @@
 	    protected function btnStartGameClicked(event:Event):void
 		{
 			currentState = "Game"
-		}  	 
-	    	    
+		}
+		
+		// BtnGive Event handler	
+	    protected function btnGiveClicked(event:Event):void
+		{			
+			hboxGives.visible = true;
+	    }
+	    
+	    // BtnGive Event handler	
+	    protected function  givesIDClicked(id: int):void
+		{			
+			GivesState.ID = id;
+			hboxGives.visible = false;
+	    }
+	  	 	  	 
 	]]>
     </mx:Script>
 	

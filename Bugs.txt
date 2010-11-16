@@ -2,8 +2,55 @@
 
 FAFlex 10000: 
 	the background continues moving when the mouse is over of application bounds.
- 	Log: 11/15/2010
+ 	Last log: 11/16/2010
 	Priority:3
-	Status: Active
+	Status: Fixed
+	Comments: Was fixed during added additionally functions into projects.
 
+------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------
+
+FAFlex 10001: 
+	Need move scripts from mxml file into separate file
+ 	Last log: 11/16/2010
+	Priority:2
+	Status: Active
+	
+
+------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------
+
+FAFlex 10002: 
+	The main buttons should be in the Russin lang.
+	The backgrond should be in a Green color.
+ 	Last log: 11/16/2010
+	Priority:2
+	Status: Active
+	
+------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------
+
+FAFlex 10003: 
+	When mouse over on buttons object there are some issues with game mouse pointer.
+	The mouse pointer jumps in left conrner.
+	The backgrond should be in a Green color.
+ 	Last log: 11/16/2010
+	Priority:1
+	Status: Active
+	
+------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------
+
+FAFlex 10004: 
+	The new objects is redraw another objects.
+	The mouse pointer jumps in left conrner.
+	The backgrond should be in a Green color.
+ 	Last log: 11/16/2010
+	Priority:1
+	Status: Active
+	
 ------------------------------------------------------------------------------------------------------------
