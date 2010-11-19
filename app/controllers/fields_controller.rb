@@ -83,6 +83,22 @@ class FieldsController < ApplicationController
     end    
   end
 
+  # POST /fields
+  # POST /fields.xml
+  def growallfields
+    
+    @fields = Field.all
+
+    @fields.each { |field|  
+        if (field.fstate != 5) then
+          field.fstate = field.fstate + 1
+          field.update_attribute(:fstate, field.fstate)
+        end
+      }
+
+    render :xml => @fields
+  end
+
   # PUT /fields/1
   # PUT /fields/1.xml
   def update
@@ -98,7 +114,7 @@ class FieldsController < ApplicationController
       end
     end
   end
-
+  
   # DELETE /fields/1
   # DELETE /fields/1.xml
   def destroy

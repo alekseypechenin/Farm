@@ -7,10 +7,6 @@
 	frameRate="100"
 	creationComplete="creationComplete()"
 	enterFrame="enterFrame(event)"
-	click="click(event)"
-    mouseDown="mouseDown(event)"
-    mouseUp="mouseUp(event)"
-    mouseMove="mouseMove(event)"
 	currentState="MainMenu">
 		
 	<mx:states>
@@ -55,11 +51,17 @@
 		</mx:State>			
 	</mx:states>
 		
-	<mx:Canvas x="0" y="0" width="100%" height="100%" id="myCanvas"/>
+	<mx:Canvas
+		click="click(event)"
+    	mouseDown="mouseDown(event)"
+    	mouseUp="mouseUp(event)"
+    	mouseMove="mouseMove(event)"
+		x="0" y="0" width="100%" height="100%" id="myCanvas"/>
 	<mx:Label right="30" bottom="10" fontSize="20" fontWeight="bold" text="Demo version" />
 	
 	<mx:Script>
-	<![CDATA[  
+	<![CDATA[
+		import mx.controls.Alert;  
 	
 		// Namespaces
 		import Core.*		

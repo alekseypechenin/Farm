@@ -96,7 +96,7 @@ package Entities
 		// Update fields in accordance with new XML data
 		public function updateFieldObjects(fieldsData: XMLList):void
 		{		
-			var Field:FieldObject;
+			var field:FieldObject;
 			var fieldData:XML;
 			
 			for each (fieldData in fieldsData) 
@@ -106,22 +106,33 @@ package Entities
 				// Debug information
 				trace(fieldData.x,fieldData.y,fieldData.ftype,fieldData.fstate);
 				
-				var resource:GraphicsResource = ResourceManager.getResourceFromPool
-						(String(fieldData.ftype),Number(fieldData.fstate));
-					
+				field = getFieldObjects(new Point(fieldData.x,fieldData.y));
+				var resource:GraphicsResource = null;
+				
+				if ((field == null) || (field != null && field.state != fieldData.fstate))
+				{
+					resource = ResourceManager.getResourceFromPool
+							(String(fieldData.ftype),Number(fieldData.fstate));
+				}
+						
 				if (resource != null) 
 				{
-					Field = new FieldObject(
-							this,
-							resource,
-							fieldPosition,
-							getZOrder(fieldPosition))
-									
-					fieldsObjects.addItem(Field);
-				}
-				else
-				{
-					Alert.show("Can not load resource: " + fieldData.ftype);
+					if (field == null)
+					{
+						field = new FieldObject(
+								this,
+								resource,
+								fieldPosition,
+								getZOrder(fieldPosition),
+								fieldData.ftype,
+								fieldData.fstate)
+						fieldsObjects.addItem(field)
+					}
+					else
+					{
+						field.state = fieldData.fstate;
+						field.graphics = resource;
+					}
 				}
 			}
 		}
@@ -146,7 +157,6 @@ package Entities
 		{
 			if (getFieldObjects(mousePointer.position) == null)
 			{
-				var requestManager:RequestManager = new RequestManager(resultHandler,faultHandler);	
 				var givesType:String = GivesState.stateToString();
 					
 				requestManager.requestQuery(
@@ -156,7 +166,31 @@ package Entities
 			}
 			else
 			{
-				Alert.show("Вы не можете сажать на этом участке поля");
+				Alert.show("Вы не можете сажать на этом участке поля.");
+			}
+		}
+		
+		// Grows fields
+		public function growFieldObject():void
+		{
+			var needGrow:Boolean = false
+			var fieldObject:FieldObject;
+			for each (fieldObject in fieldsObjects)
+			{
+				if (fieldObject.state < FieldObject.maxState)
+				{
+					needGrow = true;
+					break;
+				}
+			} 
+			if (needGrow)
+			{
+				requestManager.requestQuery(RequestManager.GROWGIVES);			
+				requestManager.requestSend();
+			}
+			else
+			{
+				Alert.show("Нечему расти..");
 			}
 		}
 		
@@ -248,13 +282,19 @@ package Entities
 			if (yOffset >= yMaxOffset) { yOffset = yMaxOffset; }
 			
 			switch (CommandState.State)
-			{
+			{				
+				case CommandState.None:
+					mousePointer.hidden = false;
+					break;
+				case CommandState.Give:
+					mousePointer.hidden = true;
+					
+					break;			
 				case CommandState.Grow:
-				
+					growFieldObject();		
 					CommandState.State = CommandState.None;
 					break;
-				case CommandState.Take:
-				
+				case CommandState.Take:		
 					CommandState.State = CommandState.None;
 					break;
 			}
@@ -273,7 +313,7 @@ package Entities
 		{
 			if (!wasMoving)
 			{
-				if (GivesState.State != GivesState.None)
+				if (GivesState.State != GivesState.None && !mousePointer.hidden)
 				{
 					addFieldObject();
 				}
@@ -283,26 +323,29 @@ package Entities
 		// MouseMove event handler
 		override public function mouseMove(event:MouseEvent):void
 		{		
-			if (event.buttonDown)
+			if (!mousePointer.hidden)
 			{
-				wasMoving =true; 
-				var newXOffset: Number = event.localX - prevMousePoint.x;
-				var newYOffset: Number = event.localY - prevMousePoint.y;
+				if (event.buttonDown)
+				{
+					wasMoving =true; 
+					var newXOffset: Number = event.localX - prevMousePoint.x;
+					var newYOffset: Number = event.localY - prevMousePoint.y;
+					
+					xOffset += -newXOffset;
+					yOffset += -newYOffset;
+					
+					prevMousePoint = new Point(event.localX, event.localY);
+				}
 				
-				xOffset += -newXOffset;
-				yOffset += -newYOffset;
-				
-				prevMousePoint = new Point(event.localX, event.localY);
-			}
-			
-			globalMatrixPosition = getMatrixPosition(
-										new Point(event.localX + xOffset,
-										event.localY + yOffset))
-										
-			if (globalMatrixPosition.x != -1 && globalMatrixPosition.y != -1)
-			{			
-				mousePointer.position = 	globalMatrixPosition;
-				mousePointer.hidden = false;
+				globalMatrixPosition = getMatrixPosition(
+											new Point(event.localX + xOffset,
+											event.localY + yOffset))
+											
+				if (globalMatrixPosition.x != -1 && globalMatrixPosition.y != -1)
+				{			
+					mousePointer.position = 	globalMatrixPosition;
+					mousePointer.hidden = false;
+				}
 			}
 		}
 						

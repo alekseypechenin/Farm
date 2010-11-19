@@ -7,6 +7,8 @@ package Entities
 	// Represents object that determines Field(Gives) game object (potato, clover and e.t.c)
 	public class FieldObject extends GameObject
 	{
+		public static const maxState:int = 5;
+		
 		// Uniq number
 	    public var id:Number;
 	    
@@ -20,9 +22,13 @@ package Entities
 	    public function FieldObject(tiledBackground:TiledBackground,
 	    						    graphics:GraphicsResource,
 	    						    position:Point,	    					
-	    						    zOrder:int)
+	    						    zOrder:int,
+	    						    type:String,
+	    						    state:int)
 		{
-			super(tiledBackground,graphics,position,zOrder);												
+			super(tiledBackground,graphics,position,zOrder);	
+			this.state = state;											
+			this.type = type;
 		}		  
 	}
 }
