@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Ftype:</b>
+  <%= @field.ftype %>
+</p>
+
+<p>
+  <b>Fstate:</b>
+  <%= @field.fstate %>
+</p>
+
+<p>
+  <b>X:</b>
+  <%= @field.x %>
+</p>
+
+<p>
+  <b>Y:</b>
+  <%= @field.y %>
+</p>
+
+
+<%= link_to 'Edit', edit_field_path(@field) %> |
+<%= link_to 'Back', fields_path %>

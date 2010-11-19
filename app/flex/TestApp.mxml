@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
+	  <mx:Button label="call service"
+        click="res()" x="117" y="161"/>
+        
+      <mx:Button label="add fields"
+        click="add()" x="28" y="161"/>      
+    <mx:DataGrid id="dg"/>
+    
+    <mx:Script>
+    	<![CDATA[
+    	
+    		import Core.*;
+    		    		    		
+    		public function res():void
+    		{    		
+    			//var reqHandler:RequestHandler = new RequestHandler();    	
+    			//reqHandler.requestQuery(RequestHandler.RETURNSALLGIVES,RequestHandler.METHOD_POST);
+    			//dg.dataProvider = reqHandler.dataFieldsArray;
+    		}
+    		
+    		public function add():void
+    		{    
+    			//var reqHandler:RequestHandler = new RequestHandler();   			   		
+    			//reqHandler.requestGetQuery(RequestHandler.ADDGIVE,
+    			//						RequestHandler.METHOD_GET,
+    			//{x:"3",y:"3",ftype:"potato",fsate:"3"});    			
+    		}
+    		
+    	]]>
+    </mx:Script>
+</mx:Application>

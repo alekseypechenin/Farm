@@ -35,8 +35,6 @@ FAFlex 10002:
 
 FAFlex 10003: 
 	When mouse over on buttons object there are some issues with game mouse pointer.
-	The mouse pointer jumps in left conrner.
-	The backgrond should be in a Green color.
  	Last log: 11/16/2010
 	Priority:1
 	Status: Active
@@ -46,11 +44,9 @@ FAFlex 10003:
 ------------------------------------------------------------------------------------------------------------
 
 FAFlex 10004: 
-	The new objects is redraw another objects.
-	The mouse pointer jumps in left conrner.
-	The backgrond should be in a Green color.
+	The new objects are redraw another objects.
  	Last log: 11/16/2010
 	Priority:1
-	Status: Active
-	
+	Status: Fixed
+	Comments. During adding additionally functions
 ------------------------------------------------------------------------------------------------------------
