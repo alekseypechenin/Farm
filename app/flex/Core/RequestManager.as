@@ -14,6 +14,7 @@ package Core
 		public static const RETURNSALLGIVES:String = "http://localhost:3000/fields/indextoclient";
 		public static const ADDGIVE:String = "http://localhost:3000/fields/createtoserver";
 		public static const GROWGIVES:String = "http://localhost:3000/fields/growallfields";			
+		public static const TAKEGIVES:String = "http://localhost:3000/fields/takefields";
 		private var httprequest: HTTPService = new HTTPService();
 		
 		private var resultHandler:Function;

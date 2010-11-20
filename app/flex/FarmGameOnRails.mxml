@@ -15,41 +15,33 @@
 			enterState="enterGame(event)"
         	exitState="exitGame(event)">
         	<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Button right="30" top="20"  color="Green"  label="Выбрать растение" id="btnGive" click="btnGiveClicked(event)" width="150" height="30"/>
-			</mx:AddChild>
+				<mx:VBox id="hboxButton" horizontalAlign="center" paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"  right="15" top="15" borderStyle="outset" backgroundColor="Green" backgroundAlpha="0.2">
+					<mx:Button id="btnGive" label="Выбрать растение" click="{hboxGives.visible = true}" width="130" height="30"/>
+					<mx:Button id="btnTake" label="Собрать растение"  click="{CommandState.State = CommandState.Take}" width="130" height="30"/>
+					<mx:Button id="btnGrow" label="Вырастить растение" click="{CommandState.State = CommandState.Grow}" width="130" height="30"/>
+					<mx:Button id="btnExit" label="Выйти в Меню" click="btnExitClicked(event)" width="130" height="30"/>		
+				</mx:VBox>
+			</mx:AddChild>				
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Button right="30" top="60" color="Green"  label="Собрать растение" id="btnTake" width="150" click="btnTakeClicked(event)" height="30"/>
-			</mx:AddChild>
-			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Button right="30" top="100"  color="Green"  label="Вырастить растение" id="btnGrow" width="150" click="btnGrowClicked(event)" height="30"/>
-			</mx:AddChild>
-			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Button right="30" top="140"  color="Green"  label="Выйти в Меню" id="btnExit" click="btnExitClicked(event)" width="150" height="30"/>
-			</mx:AddChild>					
-			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:HBox backgroundColor="Green" backgroundAlpha="0.2" x="{Application.application.width/2-hboxGives.width/2}" 
-						 y="{Application.application.height/2-hboxGives.height/2}" id="hboxGives" visible="false">
-					<mx:Image width="100" height="100" source="Media/Entities/potato/5.png" click="givesClicked(GivesState.Potato)" />	
-					<mx:Image width="100" height="100" source="Media/Entities/clover/5.png" click="givesClicked(GivesState.Clover)"/>
+				<mx:HBox id="hboxGives" backgroundColor="Green" borderStyle="outset" backgroundAlpha="0.7" x="{Application.application.width/2-hboxGives.width/2}" 
+						 y="{Application.application.height/2-hboxGives.height/2}" visible="false">
+					<mx:Image width="100" height="70" source="Media/Entities/potato/5.png" click="givesClicked(GivesState.Potato)" />	
+					<mx:Image width="100" height="70" source="Media/Entities/clover/5.png" click="givesClicked(GivesState.Clover)"/>
 					<mx:Image width="100" height="100" source="Media/Entities/Sunflower/5.png" click="givesClicked(GivesState.Sunflower)"/>	
 				</mx:HBox>
-			</mx:AddChild>						
-			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Label left="10" top="10" color="White" id="labelMouseX"/>
-			</mx:AddChild>
-			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Label left="10" top="20" color="White" id="labelMouseY"/>
-			</mx:AddChild>		
+			</mx:AddChild>							
 		</mx:State>
 		<mx:State name="MainMenu">
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Button x="{this.width / 2 - 10}" y="{this.height / 2 - 10}" label="Start" id="btnStart" click="btnStartGameClicked(event)" width="90" height="30"/>
+				<mx:Button x="380" y="170" label="Start" id="btnStart" click="btnStartGameClicked(event)" width="90" height="30"/>
 			</mx:AddChild>			
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Label left="30" top="10" text="Farm adventures" fontSize="20" fontWeight="bold"/>
+				<mx:Label left="30" top="38" text="Farm adventures" fontSize="20" fontWeight="bold"/>
 			</mx:AddChild>		
 		</mx:State>			
 	</mx:states>
+	
+	<mx:Label right="30" bottom="10" fontSize="20" fontWeight="bold" text="Demo version" />
 		
 	<mx:Canvas
 		click="click(event)"
@@ -57,7 +49,6 @@
     	mouseUp="mouseUp(event)"
     	mouseMove="mouseMove(event)"
 		x="0" y="0" width="100%" height="100%" id="myCanvas"/>
-	<mx:Label right="30" bottom="10" fontSize="20" fontWeight="bold" text="Demo version" />
 	
 	<mx:Script>
 	<![CDATA[
@@ -80,16 +71,11 @@
 	    	myCanvas.graphics.clear();
 	    	if (inGame)	    	
 	    	{
-	    		/// DEBUG ONLY
-	    		labelMouseX.text = this.mouseX.toString()
-				labelMouseY.text = this.mouseY.toString()								
-					
-				/// Game Loop				    		   
+	    		/// Game Loop				    		   
 		    	GameObjectManager.Instance.enterFrame();		  			    			    	
 		    	myCanvas.graphics.beginBitmapFill(GameObjectManager.Instance.backBuffer, null, false, false);
 		    	myCanvas.graphics.drawRect(0 , 0, this.width, this.height);
 		    	myCanvas.graphics.endFill();
-	   			
 	    	}	
 	    }
 	    
@@ -134,8 +120,6 @@
 		// btnExit Event handler	
 	    protected function btnExitClicked(event:Event):void
 		{			
-			inGame = false;
-			GameObjectManager.Instance.shutdown();
 			currentState = "MainMenu"			
 	    }
 	    
@@ -150,28 +134,7 @@
 		{			
 			GivesState.State = givesState;
 			hboxGives.visible = false;
-			CommandState.State = CommandState.None;
-	    }
-	    
-	    // BtnGive Event handler	
-	    protected function btnGiveClicked(event:Event):void
-		{			
-			hboxGives.visible = true;
-			CommandState.State = CommandState.Give;
-	    }
-	    
-	    // btnTake Event handler
-	    protected function btnTakeClicked(event:Event):void
-	    {
-	    	CommandState.State = CommandState.Take;
-	    }
-	    
-	    // btnTake Event handler
-	    protected function btnGrowClicked(event:Event):void
-	    {
-	    	CommandState.State = CommandState.Grow;
-	    }
-	  	 	  	 
+	    } 	  	 
 	]]>
     </mx:Script>
 	

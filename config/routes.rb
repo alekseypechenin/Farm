@@ -1,4 +1,15 @@
 FarmGameOnRails::Application.routes.draw do
+
+  match ':controller(/:action(/:id(.:format)))'
+
+  resources :fields
+
+  post 'fields/indextoclient', :controller=>'fields', :action => 'indextoclient'
+  post 'fields/createtoserver', :controller=>'fields', :action => 'createtoserver'
+
+  root :to => "fields#start"
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -54,10 +65,4 @@ FarmGameOnRails::Application.routes.draw do
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
-  post 'fields/createtoserver', :controller=>'fields', :action => 'createtoserver'
-
-  match ':controller(/:action(/:id(.:format)))'
-  
-  resources :fields
-  root :to => "fields#start"
 end

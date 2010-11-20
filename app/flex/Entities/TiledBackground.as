@@ -10,6 +10,7 @@ package Entities
 	import flash.geom.*;
 	
 	import mx.collections.*;
+	import mx.containers.Canvas;
 	import mx.controls.Alert;
 	import mx.core.*;
 	import mx.rpc.events.FaultEvent;
@@ -24,6 +25,9 @@ package Entities
 		private const objectsGlobalOffsetY:int = 22; 
 		private const maxMatrixX:int = 15;
 		private const maxMatrixY:int = 27
+		
+		// Determines that unusable objects should be deleted (field state == field max state) 
+		private var needDeleteUnusableObjects:Boolean = false;
 		
 		// Matrix coordinates that is determined by Mouse Pointer. Default = undefined
 		private var globalMatrixPosition: Point = new Point(-1,-1);		
@@ -75,21 +79,33 @@ package Entities
 		{
 			Alert.show(event.fault.faultString, event.fault.faultCode);
 		}	
-		
+	
 		// RequestManager Result event handler 				
 		private function resultHandler(event:ResultEvent):void
 		{
 			var fieldsAsXML:XML = event.result as XML;
-								
-			var fields:XMLList = fieldsAsXML..field;
-			
-			if (fields.length() == 0) 
+				
+			if (!fieldsAsXML.hasSimpleContent())
 			{
-				updateFieldObjects(new XMLList(fieldsAsXML));
+				var fields:XMLList = fieldsAsXML..field;
+				
+				if (fields.length() == 0) 
+				{
+					// Assume that xml contains only one node
+					updateFieldObjects(new XMLList(fieldsAsXML));
+				}
+				else
+				{
+					updateFieldObjects(fields);
+				}
 			}
-			else
+			
+			// Here we assume that the 'take' commands was started and we should delete unusable
+			// objects
+			if (needDeleteUnusableObjects)
 			{
-				updateFieldObjects(fields);
+				needDeleteUnusableObjects = false;
+				deleteUnusableFieldObjects();
 			}
 		}
 		
@@ -113,8 +129,14 @@ package Entities
 				{
 					resource = ResourceManager.getResourceFromPool
 							(String(fieldData.ftype),Number(fieldData.fstate));
+							
+					if (resource == null) 
+					{						
+						Alert.show("Не могу загрузить ресурс: " + fieldData.ftype); 
+						continue;
+					}
 				}
-						
+					
 				if (resource != null) 
 				{
 					if (field == null)
@@ -134,7 +156,34 @@ package Entities
 						field.graphics = resource;
 					}
 				}
-			}
+			}		
+		}
+		
+		// Delete unusable objects
+		public function deleteUnusableFieldObjects():void
+		{
+			var needCheck:Boolean = true;
+			while (needCheck)
+			{
+				needCheck = false;
+					
+				var i:int = 0;
+				var field:FieldObject = null;
+			
+					
+				for (i = 0; i < fieldsObjects.length; ++i)
+				{
+					field = FieldObject(fieldsObjects.getItemAt(i));
+					if (field.state == FieldObject.maxState)
+					{
+						// Founded!!
+						needCheck = true;
+						field.shutdown();
+						fieldsObjects.removeItemAt(i);
+						break;
+					}
+				}
+			}	
 		}
 		
 		// Get field object in accordance with matrixPosition
@@ -191,6 +240,32 @@ package Entities
 			else
 			{
 				Alert.show("Нечему расти..");
+			}
+		}
+		
+		// Take fields
+		public function takeFieldObjects():void
+		{
+			var needTake:Boolean = false
+			var fieldObject:FieldObject;
+			for each (fieldObject in fieldsObjects)
+			{
+				if (fieldObject.state == FieldObject.maxState)
+				{
+					needTake = true;
+					break;
+				}
+			}
+			 
+			if (needTake)
+			{
+				needDeleteUnusableObjects = true;
+				requestManager.requestQuery(RequestManager.TAKEGIVES);			
+				requestManager.requestSend();
+			}
+			else
+			{
+				Alert.show("Нечего собирать..");
 			}
 		}
 		
@@ -284,17 +359,18 @@ package Entities
 			switch (CommandState.State)
 			{				
 				case CommandState.None:
-					mousePointer.hidden = false;
+					// Nothing
 					break;
 				case CommandState.Give:
-					mousePointer.hidden = true;
-					
+					addFieldObject();	
+					CommandState.State = CommandState.None;					
 					break;			
 				case CommandState.Grow:
 					growFieldObject();		
 					CommandState.State = CommandState.None;
 					break;
-				case CommandState.Take:		
+				case CommandState.Take:
+					takeFieldObjects();		
 					CommandState.State = CommandState.None;
 					break;
 			}
@@ -315,14 +391,17 @@ package Entities
 			{
 				if (GivesState.State != GivesState.None && !mousePointer.hidden)
 				{
-					addFieldObject();
+					CommandState.State = CommandState.Give;
 				}
 			} 
 		}
 		
 		// MouseMove event handler
 		override public function mouseMove(event:MouseEvent):void
-		{		
+		{	
+			event.target is Canvas ? mousePointer.hidden = false 
+									: mousePointer.hidden = true;
+				
 			if (!mousePointer.hidden)
 			{
 				if (event.buttonDown)

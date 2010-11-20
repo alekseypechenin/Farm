@@ -99,6 +99,23 @@ class FieldsController < ApplicationController
     render :xml => @fields
   end
 
+  # POST /fields
+  # POST /fields.xml
+  def takefields
+
+    @fields = Field.all
+
+    @fields.each { |field|
+        if (field.fstate == 5) then
+          field.destroy
+        end
+      }
+
+    @fields = Field.all
+    
+    render :xml => @fields
+  end
+
   # PUT /fields/1
   # PUT /fields/1.xml
   def update

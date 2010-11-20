@@ -47,11 +47,15 @@ package Core
 		public function startup():void
 		{
 			lastFrame = new Date();
-			var tiles:TiledBackground = new TiledBackground(ResourceManager.BackGroundGraphicID1)							
+			var tiles:TiledBackground = new TiledBackground(ResourceManager.BackGroundGraphicID1)
+			GivesState.State = GivesState.Potato;	
+			CommandState.State = CommandState.None;					
 		}
 		
 		public function shutdown():void
 		{
+			GivesState.State = GivesState.None;
+			CommandState.State = CommandState.None;
 			shutdownAll();
 		}
 		
