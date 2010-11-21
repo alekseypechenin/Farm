@@ -1,11 +1,11 @@
 package Core
-{
+{	
+	import mx.collections.*;
+	import mx.core.Application;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
-	import mx.rpc.http.HTTPService;
-	
-	import mx.collections.*;
-	import mx.controls.Alert;
+	import mx.rpc.http.HTTPService; 
+
     		
 	public final class RequestManager	
 	{
@@ -53,5 +53,4 @@ package Core
 			httprequest.send(requestParams);			
 		}
 	}
-	
 }

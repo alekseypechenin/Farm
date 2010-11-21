@@ -13,15 +13,17 @@ package Entities
 		// object position
 		public var position:Point = new Point(0, 0);
 		// the bitmap data to display	
-		public var graphics:GraphicsResource = null;
+		public var _graphics:GraphicsResource = null;
 		
-		private var tiledBackground:TiledBackground = null;
+		// World tile layer.
+	    private var tiledBackground:TiledBackground = null;
+	  
 		
-		public function GameObject(tiledBackground:TiledBackground, graphics:GraphicsResource, position:Point, zOrder:int = 0)
+		public function GameObject(tiledBackground:TiledBackground,position:Point, zOrder:int = 0)
 		{
-			super(zOrder);	
-			this.tiledBackground = tiledBackground;			
-			this.graphics = graphics;
+			super(zOrder);
+			inuse = false;
+			this.tiledBackground = tiledBackground;	
 			this.position = position.clone();									
 		}
 	
@@ -31,20 +33,36 @@ package Entities
 			if (inuse)
 			{				
 				super.shutdown();
-				graphics = null;							
+				_graphics = null;							
 			}
 		}
 		
+		public function set graphics(value:GraphicsResource):void
+		{
+			if (value != null)
+			{
+				inuse = true;
+				this._graphics = value;
+				InitializeComplited();
+			}
+		}
+		
+		public function get graphics():GraphicsResource
+		{
+			return this._graphics;
+		}  
+		
 		// Draws object
 		override public function copyToBackBuffer(db:BitmapData):void
-		{			
+		{		
 			var screenPos:Point = tiledBackground.getObjectScreenPosition(new Point(position.x,position.y));			
 			var screenPosInAccordanceWithHeigh: Point = new Point(
 				 screenPos.x ,
-				 screenPos.y - (this.graphics.drawRect.height - tiledBackground.maxObjectHeight));
-			
+				 screenPos.y - (this.graphics.drawRect.height - tiledBackground.maxObjectHeight));				
 			db.copyPixels(graphics.bitmap, graphics.bitmap.rect, screenPosInAccordanceWithHeigh, graphics.bitmapAlpha, new Point(0, 0), true);
-		}				
+		}	
+		
+		public function InitializeComplited():void { }				
 			
 	}
 }

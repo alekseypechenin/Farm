@@ -2,9 +2,9 @@ package Utils
 {
 	// Namespaces	
 	import flash.display.*;
-	import flash.geom.*;	
+	import flash.geom.*;
+	
 	import mx.controls.Image;
-	import mx.core.Application;
 		
 	// Determines graphis resource for DisplatObject
 	public class GraphicsResource
@@ -22,11 +22,10 @@ package Utils
 		} 
 		
 		// Constructor
-		public function GraphicsResource(image:DisplayObject, drawRect:Rectangle = null)
-		{							
-			bitmap = createBitmapData(image);
-			bitmapAlpha = createAlphaBitmapData(image);
-								
+		public function GraphicsResource(loader:Loader, drawRect:Rectangle = null)
+		{
+			bitmap = createBitmapData(loader);
+			bitmapAlpha = createAlphaBitmapData(loader);													
 			if (drawRect == null)
 				this._drawRect = bitmap.rect;
 			else
@@ -51,7 +50,7 @@ package Utils
 		}
 		
 		// Creates BitMapData using DisplayObject
-		protected function createBitmapData(image:DisplayObject):BitmapData
+		protected function createBitmapData(image:Loader):BitmapData
 		{					
 			var bitmap:BitmapData = new BitmapData(image.width, image.height);
 			bitmap.draw(image);
@@ -59,7 +58,7 @@ package Utils
 		}
 		
 		// Creates BitMapData with Alpha property using DisplayObject
-		protected function createAlphaBitmapData(image:DisplayObject):BitmapData
+		protected function createAlphaBitmapData(image:Loader):BitmapData
 		{
 			var bitmap:BitmapData = new BitmapData(image.width, image.height);
 			bitmap.draw(image, null, null, flash.display.BlendMode.ALPHA);

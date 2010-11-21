@@ -17,7 +17,7 @@ package Entities
 	import mx.rpc.events.ResultEvent;
 	
 	// Crates main landshaft
-	public class TiledBackground extends BaseObject
+	public class TiledBackground extends GameObject
 	{
 		public const maxObjectWidth:int = 100;
 		public const maxObjectHeight:int = 54;
@@ -31,10 +31,7 @@ package Entities
 		
 		// Matrix coordinates that is determined by Mouse Pointer. Default = undefined
 		private var globalMatrixPosition: Point = new Point(-1,-1);		
-		
-		// the bitmap data to display	
-		private var graphics:GraphicsResource = null;
-		
+			
 		// Request manager. Allows to call HTTP request
 		private var requestManager:RequestManager = null;
 		
@@ -57,21 +54,26 @@ package Entities
 		private var mousePointer: GameObject = null;
 						
 		// Constructor	
-		public function TiledBackground(graphics:GraphicsResource)
+		public function TiledBackground()
 		{
-			super(ZOrders.BACKGROUNDZORDER);
-			this.graphics = graphics;	
+			super(this, new Point(0,0),ZOrders.BACKGROUNDZORDER);
+		}
+		
+		override public function InitializeComplited():void
+		{
 			xMaxOffset = this.graphics.drawRect.width - Application.application.width;
 			yMaxOffset = this.graphics.drawRect.height - Application.application.height;					
 			xOffset = xMaxOffset / 2;
 			yOffset = yMaxOffset / 2;
 			
-			mousePointer = new GameObject(this,ResourceManager.SunflowerGraphicID1,new Point(0,0),1);
+			mousePointer = new GameObject(this,new Point(0,0),1);			
+			var reqManager:ResourcesLoader = new ResourcesLoader(mousePointer);
+			reqManager.load(ResourceManager.CloverID1);			
 			mousePointer.hidden = true;	
 						
 			requestManager = new RequestManager(resultHandler,faultHandler);		
 			requestManager.requestQuery(RequestManager.RETURNSALLGIVES);		
-			requestManager.requestSend();		
+			requestManager.requestSend();
 		}
 		
 		// RequestManager Fault event handler 
@@ -123,38 +125,26 @@ package Entities
 				trace(fieldData.x,fieldData.y,fieldData.ftype,fieldData.fstate);
 				
 				field = getFieldObjects(new Point(fieldData.x,fieldData.y));
-				var resource:GraphicsResource = null;
 				
 				if ((field == null) || (field != null && field.state != fieldData.fstate))
-				{
-					resource = ResourceManager.getResourceFromPool
-							(String(fieldData.ftype),Number(fieldData.fstate));
-							
-					if (resource == null) 
-					{						
-						Alert.show("Не могу загрузить ресурс: " + fieldData.ftype); 
-						continue;
-					}
-				}
-					
-				if (resource != null) 
 				{
 					if (field == null)
 					{
 						field = new FieldObject(
 								this,
-								resource,
 								fieldPosition,
 								getZOrder(fieldPosition),
 								fieldData.ftype,
 								fieldData.fstate)
-						fieldsObjects.addItem(field)
+						fieldsObjects.addItem(field);
 					}
 					else
 					{
 						field.state = fieldData.fstate;
-						field.graphics = resource;
 					}
+					
+					var reqManager:ResourcesLoader = new ResourcesLoader(field);
+					reqManager.load(ResourceManager.getResourceFromPool(fieldData.ftype,fieldData.fstate));			
 				}
 			}		
 		}
@@ -422,7 +412,7 @@ package Entities
 											
 				if (globalMatrixPosition.x != -1 && globalMatrixPosition.y != -1)
 				{			
-					mousePointer.position = 	globalMatrixPosition;
+					mousePointer.position = globalMatrixPosition;
 					mousePointer.hidden = false;
 				}
 			}
@@ -431,14 +421,17 @@ package Entities
 		// Draws Tiled background
 		override public function copyToBackBuffer(db:BitmapData):void
 		{		
-			// Create visual bounds	
-			var recVisBounds:Rectangle = new Rectangle(
-					0+xOffset,
-					0+yOffset,
-					0+xOffset+Application.application.width,
-					0+xOffset+Application.application.height);
-								
-			db.copyPixels(graphics.bitmap, recVisBounds, new Point(0,0), graphics.bitmapAlpha, new Point(0, 0), true);		
+			if (graphics != null)
+			{
+				// Create visual bounds	
+				var recVisBounds:Rectangle = new Rectangle(
+						0+xOffset,
+						0+yOffset,
+						0+xOffset+Application.application.width,
+						0+xOffset+Application.application.height);
+									
+				db.copyPixels(graphics.bitmap, recVisBounds, new Point(0,0), graphics.bitmapAlpha, new Point(0, 0), true);
+			}		
 		}
 
 	}

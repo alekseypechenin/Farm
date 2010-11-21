@@ -14,7 +14,13 @@ package Core
 	{
 		// double buffer
 		public var backBuffer:BitmapData;
-		// colour to use to clear backbuffer with 
+		// Server Url Address. Default = 
+		public var serverAddress: String = "http://localhost:3000/";
+		
+		// Last errors
+		private var lastError:String = null;
+		
+		// colour to use to clear backbuffer with	 
 		private var clearColor:uint = 0x000000;
 		// static instance 
 		protected static var instance:GameObjectManager = null;
@@ -47,9 +53,18 @@ package Core
 		public function startup():void
 		{
 			lastFrame = new Date();
-			var tiles:TiledBackground = new TiledBackground(ResourceManager.BackGroundGraphicID1)
+			
+			var tiles:TiledBackground = new TiledBackground();
+			var reqManager:ResourcesLoader = new ResourcesLoader(tiles);
+			reqManager.load(ResourceManager.BackGroundID1);
+			
 			GivesState.State = GivesState.Potato;	
-			CommandState.State = CommandState.None;					
+			CommandState.State = CommandState.None;
+		}
+		
+		public function lastErrors():String
+		{
+			return GameObjectManager.Instance.lastError;
 		}
 		
 		public function shutdown():void

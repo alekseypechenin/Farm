@@ -29,8 +29,8 @@
 					<mx:Image width="100" height="70" source="Media/Entities/clover/5.png" click="givesClicked(GivesState.Clover)"/>
 					<mx:Image width="100" height="100" source="Media/Entities/Sunflower/5.png" click="givesClicked(GivesState.Sunflower)"/>	
 				</mx:HBox>
-			</mx:AddChild>							
-		</mx:State>
+			</mx:AddChild>
+			</mx:State>
 		<mx:State name="MainMenu">
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
 				<mx:Button x="380" y="170" label="Start" id="btnStart" click="btnStartGameClicked(event)" width="90" height="30"/>
@@ -38,17 +38,29 @@
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
 				<mx:Label left="30" top="38" text="Farm adventures" fontSize="20" fontWeight="bold"/>
 			</mx:AddChild>		
+		</mx:State>
+		<mx:State name="ErrorScreen">
+			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
+				<mx:Button x="309" y="254" label="Перезапустить" id="btnRestart" click="btnStartGameClicked(event)" width="127" height="30"/>
+			</mx:AddChild>			
+			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
+				<mx:TextArea id="labelId" left="266" top="115" fontSize="20" fontWeight="bold" width="219" height="131"/>
+			</mx:AddChild>		
+			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
+				<mx:Label x="266" y="89" text="Упссс. Что-то упало! :)" width="219"/>
+			</mx:AddChild>
 		</mx:State>			
 	</mx:states>
 	
-	<mx:Label right="30" bottom="10" fontSize="20" fontWeight="bold" text="Demo version" />
-		
 	<mx:Canvas
 		click="click(event)"
     	mouseDown="mouseDown(event)"
     	mouseUp="mouseUp(event)"
     	mouseMove="mouseMove(event)"
 		x="0" y="0" width="100%" height="100%" id="myCanvas"/>
+		
+	<mx:ProgressBar id="progressBar" visible="false" label="Загрузка... (%3%%)" mode="manual" labelPlacement="center" maximum="100" alpha="0.4" barColor="Green" bottom="10" left="200"/>
+	<mx:Label right="30" bottom="10" fontWeight="bold" text="Demo version" />
 	
 	<mx:Script>
 	<![CDATA[
@@ -71,7 +83,14 @@
 	    	myCanvas.graphics.clear();
 	    	if (inGame)	    	
 	    	{
-	    		/// Game Loop				    		   
+	    		/// Game Loop
+	    		if (GameObjectManager.Instance.lastErrors() != null)
+	    		{
+	    			currentState = "ErrorScreen";
+	    			labelId.text = GameObjectManager.Instance.lastErrors();
+	    			return;	
+	    		}	
+	    				    		   
 		    	GameObjectManager.Instance.enterFrame();		  			    			    	
 		    	myCanvas.graphics.beginBitmapFill(GameObjectManager.Instance.backBuffer, null, false, false);
 		    	myCanvas.graphics.drawRect(0 , 0, this.width, this.height);
