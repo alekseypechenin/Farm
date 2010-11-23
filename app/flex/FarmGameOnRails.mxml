@@ -34,10 +34,10 @@
 			</mx:State>
 		<mx:State name="MainMenu">
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Button x="380" y="170" label="Start" id="btnStart" click="btnStartGameClicked(event)" width="90" height="30"/>
+				<mx:Button x="380" y="170" label="Начать" id="btnStart" click="btnStartGameClicked(event)" width="90" height="30"/>
 			</mx:AddChild>			
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Label left="30" top="38" text="Farm adventures" fontSize="20" fontWeight="bold"/>
+				<mx:Label left="30" top="38" text="Приключения на ферме" fontSize="20" fontWeight="bold"/>
 			</mx:AddChild>		
 		</mx:State>
 		<mx:State name="ErrorScreen">

@@ -513,7 +513,7 @@ package Entities
 					if (dragginObject != null)
 					{
 						mouseDragAndDropObject = new FieldObject(
-									this,globalMatrixPosition,ZOrders.DRAGANDDROPOBJECT,
+									this,globalMatrixPosition,getZOrder(globalMatrixPosition),
 									dragginObject.id,
 									dragginObject.type,
 									dragginObject.state
