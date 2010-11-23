@@ -18,7 +18,7 @@
         	<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
 				<mx:VBox id="hboxButton" horizontalAlign="center" paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"  right="15" top="15" borderStyle="outset" backgroundColor="Green" backgroundAlpha="0.2">
 					<mx:Button id="btnGive" label="Выбрать растение" click="{hboxGives.visible = true}" width="150" height="30"/>
-					<mx:Button id="btnTake" label="Собрать растение"  click="{CommandState.State = CommandState.Take}" width="150" height="30"/>
+					<mx:Button id="btnTake" label="Собрать растение"  click="{GivesState.State = GivesState.None}" width="150" height="30"/>
 					<mx:Button id="btnGrow" label="Вырастить растение" click="{CommandState.State = CommandState.Grow}" width="150" height="30"/>
 					<mx:Button id="btnExit" label="Выйти в Меню" click="btnExitClicked(event)" width="150" height="30"/>		
 				</mx:VBox>
@@ -64,6 +64,8 @@
 	
 	<mx:Script>
 	<![CDATA[
+	
+		import mx.events.*;
 		import mx.controls.Alert;  
 	
 		// Namespaces

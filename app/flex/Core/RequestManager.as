@@ -18,7 +18,7 @@ package Core
 		public static const RETURNSALLGIVES:String = "fields/indextoclient";
 		public static const ADDGIVE:String = "fields/createtoserver";
 		public static const GROWGIVES:String = "fields/growallfields";			
-		public static const TAKEGIVES:String = "fields/takefields";
+		public static const TAKEGIVES:String = "fields/takefield";
 		public static const UPDATEGIVES:String = "fields/update";
 		
 		// HTTPService helps our to obtains data

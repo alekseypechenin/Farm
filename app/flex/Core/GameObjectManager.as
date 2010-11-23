@@ -63,6 +63,7 @@ package Core
 			
 			GivesState.State = GivesState.Potato;	
 			CommandState.State = CommandState.None;
+			lastError = null;
 		}
 			
 		// Destroyed objects when game was exit	

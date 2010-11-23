@@ -2,7 +2,6 @@ package Core
 {
 	// Namespaces
 	import Entities.GameObject;
-	import Events.*;
 	import Utils.GraphicsResource;
 	import flash.display.Loader;
 	import flash.events.*;

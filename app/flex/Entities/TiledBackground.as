@@ -39,9 +39,6 @@ package Entities
 		// Max size of 'Field' objects array
 		private const maxMatrixX:int = 15;
 		private const maxMatrixY:int = 27
-	
-		// Determines that unusable objects should be deleted (field state == field max state) 
-		private var needDeleteUnusableObjects:Boolean = false;
 		
 		// Matrix coordinates that is determined by Mouse Pointer. Default = undefined
 		private var globalMatrixPosition: Point = new Point(-1,-1);		
@@ -121,31 +118,21 @@ package Entities
 			}		
 		}
 								
-		// Delete unusable objects
-		public function deleteUnusableFieldObjects():void
+		// Delete unusable object
+		public function deleteUnusableFieldObject(removedField: FieldObject):void
 		{
-			var needCheck:Boolean = true;
-			while (needCheck)
+			var i:int = 0;
+			var field:FieldObject;	
+			for (i = 0; i < fieldsObjects.length; ++i)
 			{
-				needCheck = false;
-					
-				var i:int = 0;
-				var field:FieldObject = null;
-			
-					
-				for (i = 0; i < fieldsObjects.length; ++i)
+				field = FieldObject(fieldsObjects.getItemAt(i));
+				if (field.id == removedField.id)
 				{
-					field = FieldObject(fieldsObjects.getItemAt(i));
-					if (field.state == FieldObject.maxState)
-					{
-						// Founded!!
-						needCheck = true;
-						field.shutdown();
-						fieldsObjects.removeItemAt(i);
-						break;
-					}
+					field.shutdown();
+					fieldsObjects.removeItemAt(i);
+					break;
 				}
-			}	
+			}
 		}
 		
 		// Get field object in accordance with matrixPosition or its ID value
@@ -295,24 +282,20 @@ package Entities
 		}
 		
 		// Take fields
-		public function takeFieldObjects():void
+		public function takeFieldObject():void
 		{
 			var needTake:Boolean = false
-			var fieldObject:FieldObject;
-			for each (fieldObject in fieldsObjects)
+			var fieldObject:FieldObject = getFieldObjects(mousePointer.position);
+			if (fieldObject != null && fieldObject.state == FieldObject.maxState)
 			{
-				if (fieldObject.state == FieldObject.maxState)
-				{
-					needTake = true;
-					break;
-				}
+				needTake = true;
 			}
 			 
 			if (needTake)
 			{
-				needDeleteUnusableObjects = true;
-				requestManager.requestQuery(RequestManager.TAKEGIVES);			
+				requestManager.requestQuery(RequestManager.TAKEGIVES,{id: fieldObject.id});			
 				requestManager.requestSend();
+				deleteUnusableFieldObject(fieldObject);
 			}
 			else
 			{
@@ -364,14 +347,6 @@ package Entities
 				{
 					updateFieldObjects(fields);
 				}
-			}
-			
-			// Here we assume that the 'take' commands was started and we should delete unusable
-			// objects
-			if (needDeleteUnusableObjects)
-			{
-				needDeleteUnusableObjects = false;
-				deleteUnusableFieldObjects();
 			}
 		}
 		
@@ -447,7 +422,7 @@ package Entities
 					CommandState.State = CommandState.None;
 					break;
 				case CommandState.Take:
-					takeFieldObjects();		
+					takeFieldObject();		
 					CommandState.State = CommandState.None;
 					break;
 			}
@@ -466,9 +441,16 @@ package Entities
 		{
 			if (!wasMoving)
 			{
-				if (GivesState.State != GivesState.None && !mousePointer.hidden)
+				if (!mousePointer.hidden)
 				{
-					CommandState.State = CommandState.Give;
+					if (GivesState.State != GivesState.None)
+					{
+						CommandState.State = CommandState.Give;
+					}
+					else
+					{
+						CommandState.State = CommandState.Take;
+					}
 				}
 			}
 			
