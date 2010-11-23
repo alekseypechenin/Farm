@@ -1,13 +1,12 @@
 package Entities
 {
+	// Namespaces
 	import Utils.*;
-	
 	import flash.geom.Point;
-	
 	import flash.display.*;
 	
 	
-	// Represents object that determines Field(Gives) game object (potato, clover and e.t.c)
+	// Represents object that determines Field(Gives) game object (potato, clover and Sunflower)
 	public class FieldObject extends GameObject
 	{
 		public static const maxState:int = 5;

@@ -11,9 +11,9 @@ package Utils
 	{
 		// BitMap data of Loader
 		public var bitmap:BitmapData = null;		
-		// BitMap data of Loader with Alpha properpty
+		// BitMap data of Loader with Transprarent property
 		public var bitmapAlpha:BitmapData = null;		
-		// Bounds of Image
+		// BitMap data of Loader with Alpha property
 		public var draggingBitmapAlpha:BitmapData = null;		
 		// Bounds of Image
 		private var _drawRect:Rectangle = null;		
@@ -53,26 +53,26 @@ package Utils
 		}
 		
 		// Creates BitMapData using Loader
-		protected function createBitmapData(image:Loader):BitmapData
+		protected function createBitmapData(loader:Loader):BitmapData
 		{					
-			var bitmap:BitmapData = new BitmapData(image.width, image.height);
-			bitmap.draw(image);
+			var bitmap:BitmapData = new BitmapData(loader.width, loader.height);
+			bitmap.draw(loader);
 			return bitmap;
 		}
 		
 		// Creates BitMapData with Alpha property using Loader
-		protected function createAlphaBitmapData(image:Loader):BitmapData
+		protected function createAlphaBitmapData(loader:Loader):BitmapData
 		{
-			var bitmap:BitmapData = new BitmapData(image.width, image.height);
-			bitmap.draw(image, null, null, flash.display.BlendMode.ALPHA);
+			var bitmap:BitmapData = new BitmapData(loader.width, loader.height);
+			bitmap.draw(loader, null, null, flash.display.BlendMode.ALPHA);
 			return bitmap;
 		}
 		
 		// Creates BitMapData with Alpha property using Loader
-		protected function createDraggingAlphaBitmapData(image:Loader):BitmapData
+		protected function createDraggingAlphaBitmapData(loader:Loader):BitmapData
 		{
-			var bitmap:BitmapData = new BitmapData(image.width, image.height,true,0x80ffffff);
-			bitmap.draw(image, null, null, flash.display.BlendMode.ALPHA);
+			var bitmap:BitmapData = new BitmapData(loader.width, loader.height,true,0x80ffffff);
+			bitmap.draw(loader, null, null, flash.display.BlendMode.ALPHA);
 			return bitmap;
 		}
 

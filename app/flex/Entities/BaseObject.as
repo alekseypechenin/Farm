@@ -22,8 +22,7 @@ package Entities
 			this.inuse = true;
 			this._zOrder = zOrder;
 			GameObjectManager.Instance.addBaseObject(this);			
-		}
-		
+		}	
 		// Removes object	
 		public function shutdown():void
 		{
@@ -34,20 +33,22 @@ package Entities
 			}
 		}
 		
-		// Get property of zOrder value
+		// zOrder property
+		//----------------------------
+		
+		// Get
 		public function get zOrder():int
 		{
 			return this._zOrder
 		}
-		
-		// Get property of zOrder value
+		// Get
 		public function set zOrder(value:int):void
 		{
 			this._zOrder = value;
 			GameObjectManager.Instance.refreshObjects();
 		}
 		
-		// Ovveride this methods if yuo want implement functionality fo them
+		// Ovveride those methods if yuo want implement functionality fo them
 		
 		public function enterFrame(dt:Number):void {}		
 		public function click(event:MouseEvent):void { }	

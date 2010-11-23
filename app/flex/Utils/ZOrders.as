@@ -3,8 +3,6 @@ package Utils
 	// Helps determine Z order of objects
 	public final class ZOrders
 	{		
-		public static const BACKGROUNDZORDER:int = 0;
-		public static const FARMOBJECTSZORDER:int = 1;
-		public static const DRAGANDDROPOBJECT:int = 500;		
+		public static const BACKGROUNDZORDER:int = 0;	
 	}
 }

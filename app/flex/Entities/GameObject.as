@@ -5,6 +5,7 @@ package Entities
 	
 	import flash.display.*;
 	import flash.geom.*;
+	
 	/*
 		The base class for all objects in the game.
 	*/
@@ -12,33 +13,24 @@ package Entities
 	{
 		// object position
 		public var position:Point = new Point(0, 0);
-		//
-		public var useDraggingBitmap:Boolean = false;
-		
+		// Determines if object is dragged
+		public var onDragged:Boolean = false;
 		// the bitmap data to display	
 		private var _graphics:GraphicsResource = null;
-		
 		// World tile layer.
 	    private var tiledBackground:TiledBackground = null;
-	  
-		public function GameObject(tiledBackground:TiledBackground,position:Point, zOrder:int = 0)
-		{
+	    // Constructor
+		public function GameObject(tiledBackground:TiledBackground,position:Point, zOrder:int = 0)		{
 			super(zOrder);
 			inuse = false;
 			this.tiledBackground = tiledBackground;	
 			this.position = position.clone();									
 		}
-	
-		// Removes object
-		override public function shutdown():void
-		{
-			if (inuse)
-			{				
-				super.shutdown();
-				_graphics = null;							
-			}
-		}
 		
+		// Graphics property
+		//----------------------------
+			
+		// Set
 		public function set graphics(value:GraphicsResource):void
 		{
 			if (value != null)
@@ -48,12 +40,25 @@ package Entities
 				InitializeComplited();
 			}
 		}
-		
+		// Get
 		public function get graphics():GraphicsResource
 		{
 			return this._graphics;
-		}  
+		} 
 		
+		// Override methods
+		//----------------------------
+			
+		
+		// Removes object
+		override public function shutdown():void
+		{
+			if (inuse)
+			{				
+				super.shutdown();
+				_graphics = null;							
+			}
+		} 
 		// Draws object
 		override public function copyToBackBuffer(db:BitmapData):void
 		{		
@@ -61,7 +66,7 @@ package Entities
 			var screenPosInAccordanceWithHeigh: Point = new Point(
 				 screenPos.x ,
 				 screenPos.y - (this.graphics.drawRect.height - tiledBackground.maxObjectHeight));
-			if (!useDraggingBitmap)
+			if (!onDragged)
 			{				
 				db.copyPixels(graphics.bitmap, graphics.bitmap.rect, screenPosInAccordanceWithHeigh, graphics.bitmapAlpha, new Point(0, 0), true);
 			}
@@ -70,7 +75,8 @@ package Entities
 				db.copyPixels(graphics.bitmap, graphics.bitmap.rect, screenPosInAccordanceWithHeigh, graphics.draggingBitmapAlpha, new Point(0, 0), true);
 			}
 		}	
-		
+
+		// Ovveride this method if you want to implement functionality to it
 		public function InitializeComplited():void { }				
 			
 	}

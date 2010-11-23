@@ -7,6 +7,7 @@ package Core
 	
 	import mx.core.*;
 	
+	// Represents logic that combines all game resource names with subfolder path
 	public final class ResourceManager
 	{
 		// BackGround
@@ -37,7 +38,8 @@ package Core
 		public static var SunflowerID3:String = "Media/Entities/Sunflower/3.png";
 		public static var SunflowerID4:String = "Media/Entities/Sunflower/4.png";
 		public static var SunflowerID5:String = "Media/Entities/Sunflower/5.png";
-	
+		
+		// Gets resource string in accordance with resType and resState  
 		public static function getResourceFromPool(resType:String, resState: int):String
 		{
 			var resource:String = null;

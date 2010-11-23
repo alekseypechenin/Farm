@@ -1,143 +1,99 @@
 package Core
 {
+	// Namespaces
 	import Entities.GameObject;
-	
+	import Events.*;
 	import Utils.GraphicsResource;
-	
 	import flash.display.Loader;
 	import flash.events.*;
 	import flash.net.*;
 	import flash.utils.*;
-	
 	import mx.controls.ProgressBar;
-	import Entities.BaseObject;
 	
+	// Represents logic that allows to communicate with Server and obtain image data
+	// It is wrapper of URLLoader object with additionally functions 
 	public class ResourcesLoader
 	{
-		public var showProgressBar:Boolean = false;
+		// Keep alredy loaded object
 		static public var resourcePool:Dictionary = new Dictionary;
 		
-		private var lastError:String = null;
-		private var resourceName:String = null;
-		private var _complited:Boolean = false;
-		private var loader:URLLoader = new URLLoader();
-		private var progressBar:ProgressBar = null;
-		private var resourceURL:String = null;
-		private var graphis:GraphicsResource = null;
-		private var loaderImage:Loader = null;
-		private var gameObject: GameObject = null; 
-
+		// Callback for result Handler
+		public var securityErrorHandler:Function;
 		
-		public function ResourcesLoader(gameObject:GameObject,progressBar:ProgressBar = null)
+		// Callback for ioError Handler
+		public var ioErrorHandler:Function;
+		
+		// Represent image resource name
+		private var resourceName:String = null;
+		
+		// URLLoader object. Helps our to obtains image data.
+		private var loader:URLLoader = new URLLoader();
+		
+		// Request url query. = Server URL + Image resource name
+		private var requestURL:String = null;
+		
+		// Loader object. Help our to load data to image from byte array.
+		private var loaderImage:Loader = null;
+		
+		// Represents target game object. For this object image should be loaded.
+		private var gameObject: GameObject = null;
+		
+		// Constructor
+		public function ResourcesLoader(requestServerURL:String,gameObject:GameObject)
 		{ 
 			this.gameObject = gameObject;
-			
-			// For future using
-			this.progressBar = progressBar;
-			this.loader.dataFormat = URLLoaderDataFormat.BINARY; 
-			this.configureListeners(loader);
+			this.requestURL = requestServerURL;
+			this.loader.dataFormat = URLLoaderDataFormat.BINARY;
 		}
 		
-		public function complited():Boolean
-		{
-		 	return this._complited;
-		}
-		
-		public function lastErrors():String
-		{
-			return this.lastError;
-		}
-		
+		// Load image by image name if it needed, or just returned alredy loaded image by name		
 		public function load(resourceName:String):void
 		{
-			configureURL(resourceName);
-			_complited = false;
-			
+			this.configureListeners(loader);
+			this.resourceName = resourceName;
+		
 			if (resourcePool[resourceName] != null)
 			{
-				_complited = true;
-				graphis = resourcePool[resourceName];
-				this.gameObject.graphics = graphis;
+				this.gameObject.graphics = resourcePool[resourceName];
 				return;
 			} 
 			
-			this.loader.load(new URLRequest(resourceURL));
+			this.loader.load(new URLRequest(configureURL(resourceName)));
 		}
-		
-		public function getImage():GraphicsResource
+	
+		// Returns request URL = Server URL + Image resource name
+		private function configureURL(resourceName:String):String
 		{
-			if (!_complited) return null;
-			return graphis;
+			return requestURL + resourceName;
 		}
 		
-		private function configureURL(resourceName:String):void
-		{
-			this.resourceName = resourceName;
-			resourceURL = GameObjectManager.Instance.serverAddress + resourceName;
-		}
-		
+		// Add listeners for URLLoader object
 		private function configureListeners(dispatcher:IEventDispatcher):void 
 		{
-           dispatcher.addEventListener(Event.COMPLETE, completeHandler);
-           dispatcher.addEventListener(Event.OPEN, openHandler);
-           dispatcher.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+           dispatcher.addEventListener(Event.COMPLETE, 
+           		completeHandler);
+           
+           if (securityErrorHandler != null)
            dispatcher.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-           dispatcher.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
+           if (ioErrorHandler != null)
            dispatcher.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
         }
-
+        
         private function completeHandler(event:Event):void
         {
-        	_complited = true;
+        	
             trace(this + "completeHandler: " + loader.data);
             
             loaderImage = new Loader();
             loaderImage.loadBytes(loader.data);
-            loaderImage.contentLoaderInfo.addEventListener(Event.COMPLETE, finishLoader);   
+            loaderImage.contentLoaderInfo.addEventListener(Event.COMPLETE, finishLoader);  
         }
         
+        // Occures when all bytes were loaded to Loader object
         private function finishLoader(event:Event):void 
       	{
-			graphis = new GraphicsResource(loaderImage);
-            resourcePool[resourceName] = graphis;
-            this.gameObject.graphics = graphis;
+			resourcePool[resourceName] = new GraphicsResource(loaderImage);
+            this.gameObject.graphics = resourcePool[resourceName];
 		}
-
-
-        private function openHandler(event:Event):void {
-            trace(this + "openHandler: " + event);
-        }
-
-        private function progressHandler(event:ProgressEvent):void 
-        {
-        	if (this.progressBar != null)
-        	{
-	        	var percent:Number = Math.round( event.bytesLoaded 
-				/ event.bytesTotal * 100 );
-				trace(percent);	 
-				this.progressBar.setProgress(percent,100);
-        	} 
-            trace(this + "progressHandler loaded:" + event.bytesLoaded + " total: " + event.bytesTotal);
-        }
-
-        private function securityErrorHandler(event:SecurityErrorEvent):void
-        {
-            trace(this + "securityErrorHandler: " + event);
-            this.lastError = this + "securityErrorHandler: " + event;
-        }
-
-        private function httpStatusHandler(event:HTTPStatusEvent):void
-        {
-            trace(this + "httpStatusHandler: " + event);
-            this.lastError = this + "httpStatusHandler: " + event;
-        }
-
-        private function ioErrorHandler(event:IOErrorEvent):void
-        {
-            trace(this + "ioErrorHandler: " + event);
-            this.lastError = this + "ioErrorHandler: " + event;
-        }
-
-
 	}
 }

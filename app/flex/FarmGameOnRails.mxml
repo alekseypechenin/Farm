@@ -5,6 +5,7 @@
 	width="800" 
 	height="400"
 	frameRate="100"
+	horizontalAlign="center"
 	creationComplete="creationComplete()"
 	enterFrame="enterFrame(event)"
 	currentState="MainMenu">
@@ -16,10 +17,10 @@
         	exitState="exitGame(event)">
         	<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
 				<mx:VBox id="hboxButton" horizontalAlign="center" paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"  right="15" top="15" borderStyle="outset" backgroundColor="Green" backgroundAlpha="0.2">
-					<mx:Button id="btnGive" label="Выбрать растение" click="{hboxGives.visible = true}" width="130" height="30"/>
-					<mx:Button id="btnTake" label="Собрать растение"  click="{CommandState.State = CommandState.Take}" width="130" height="30"/>
-					<mx:Button id="btnGrow" label="Вырастить растение" click="{CommandState.State = CommandState.Grow}" width="130" height="30"/>
-					<mx:Button id="btnExit" label="Выйти в Меню" click="btnExitClicked(event)" width="130" height="30"/>		
+					<mx:Button id="btnGive" label="Выбрать растение" click="{hboxGives.visible = true}" width="150" height="30"/>
+					<mx:Button id="btnTake" label="Собрать растение"  click="{CommandState.State = CommandState.Take}" width="150" height="30"/>
+					<mx:Button id="btnGrow" label="Вырастить растение" click="{CommandState.State = CommandState.Grow}" width="150" height="30"/>
+					<mx:Button id="btnExit" label="Выйти в Меню" click="btnExitClicked(event)" width="150" height="30"/>		
 				</mx:VBox>
 			</mx:AddChild>				
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
@@ -41,13 +42,13 @@
 		</mx:State>
 		<mx:State name="ErrorScreen">
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Button x="309" y="254" label="Перезапустить" id="btnRestart" click="btnStartGameClicked(event)" width="127" height="30"/>
+				<mx:Button x="309" y="254" label="В главное меню" id="btnRestart" click="btnExitClicked(event)" width="127" height="30"/>
 			</mx:AddChild>			
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:TextArea id="labelId" left="266" top="115" fontSize="20" fontWeight="bold" width="219" height="131"/>
+				<mx:TextArea id="labelId" left="197" top="115" fontSize="10" fontWeight="bold" width="360" height="131" editable="false"/>
 			</mx:AddChild>		
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
-				<mx:Label x="266" y="89" text="Упссс. Что-то упало! :)" width="219"/>
+				<mx:Label x="113" y="80" text="Возникла ошибка, пожалуйста, свяжитесь с администратором." width="496" height="27" fontWeight="normal" fontSize="15"/>
 			</mx:AddChild>
 		</mx:State>			
 	</mx:states>
@@ -59,8 +60,7 @@
     	mouseMove="mouseMove(event)"
 		x="0" y="0" width="100%" height="100%" id="myCanvas" />
 		
-	<mx:ProgressBar id="progressBar" visible="false" label="Загрузка... (%3%%)" mode="manual" labelPlacement="center" maximum="100" alpha="0.4" barColor="Green" bottom="10" left="200"/>
-	<mx:Label right="30" bottom="10" fontWeight="bold" text="Demo version" />
+	<mx:Label right="30" bottom="10" fontWeight="bold" text="RTM version" />
 	
 	<mx:Script>
 	<![CDATA[
@@ -74,7 +74,8 @@
 				
 		// Erases when application was completly loaded
 		public function creationComplete():void
-	    {												
+	    {
+	    	// NOTHING												
 	    }
 	    
 	    // One frame ping (Main loop of application)
@@ -84,10 +85,10 @@
 	    	if (inGame)	    	
 	    	{
 	    		/// Game Loop
-	    		if (GameObjectManager.Instance.lastErrors() != null)
+	    		if (GameObjectManager.Instance.lastError != null)
 	    		{
 	    			currentState = "ErrorScreen";
-	    			labelId.text = GameObjectManager.Instance.lastErrors();
+	    			labelId.text = GameObjectManager.Instance.lastError;
 	    			return;	
 	    		}	
 	    				    		   

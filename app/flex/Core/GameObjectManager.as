@@ -17,7 +17,7 @@ package Core
 		// Server Url Address. Default = 
 		public var serverAddress: String = "http://localhost:3000/";
 		// Last errors
-		private var lastError:String = null;	
+		public var lastError:String = null;	
 		// colour to use to clear backbuffer with	 
 		private var clearColor:uint = 0x000000;
 		// static instance 
@@ -40,31 +40,32 @@ package Core
 			return instance;
 		}
 		
+		// Constructor
 		public function GameObjectManager()
 		{			
 			if ( instance != null )
-				throw new Error( "Only one Singleton instance should be instantiated" ); 
-				
+				throw new Error( "Only one Singleton instance should be instantiated" );		
 			backBuffer = new BitmapData(Application.application.width, Application.application.height, false);
+			
+			// Tries to read Server URL Adress if such parameter was assigned
+			if (Application.application.parameters.serverURL != null)
+			{
+				serverAddress = Application.application.parameters.serverURL;
+			}
 		}
 		
+		// Initialezes objects when game was started
 		public function startup():void
 		{
 			lastFrame = new Date();
 			
-			var tiles:TiledBackground = new TiledBackground();
-			var reqManager:ResourcesLoader = new ResourcesLoader(tiles);
-			reqManager.load(ResourceManager.BackGroundID1);
+			var tiles:TiledBackground = new TiledBackground();	
 			
 			GivesState.State = GivesState.Potato;	
 			CommandState.State = CommandState.None;
 		}
-		
-		public function lastErrors():String
-		{
-			return GameObjectManager.Instance.lastError;
-		}
-		
+			
+		// Destroyed objects when game was exit	
 		public function shutdown():void
 		{
 			GivesState.State = GivesState.None;
@@ -72,6 +73,7 @@ package Core
 			shutdownAll();
 		}
 		
+		// Updates objects per frame seconds
 		public function enterFrame():void
 		{
 			// Calculate the time since the last frame
@@ -90,6 +92,7 @@ package Core
 	    	drawObjects();
 		}
 		
+		// Click event handler for all objects
 		public function click(event:MouseEvent):void
 		{
 			for each (var gameObject:BaseObject in baseObjects)
@@ -97,6 +100,7 @@ package Core
 					gameObject.click(event);
 		}
 		
+		// Mouse down event handler for all objects
 		public function mouseDown(event:MouseEvent):void
 		{
 			for each (var gameObject:BaseObject in baseObjects)
@@ -104,6 +108,7 @@ package Core
 					gameObject.mouseDown(event);
 		}
 		
+		// Mouse up event handler for all objects
 		public function mouseUp(event:MouseEvent):void
 		{
 			for each (var gameObject:BaseObject in baseObjects)
@@ -111,6 +116,7 @@ package Core
 					gameObject.mouseUp(event);
 		}
 		
+		// Mouse move event handler for all objects
 		public function mouseMove(event:MouseEvent):void
 		{
 			for each (var gameObject:BaseObject in baseObjects)
@@ -118,6 +124,7 @@ package Core
 					gameObject.mouseMove(event);
 		}
 		
+		// Draws all objects
 		protected function drawObjects():void
 		{
 			backBuffer.fillRect(backBuffer.rect, clearColor);
@@ -128,16 +135,19 @@ package Core
 					baseObject.copyToBackBuffer(backBuffer);
 		}
 				
+		// Adds BaseObject into collection of new objects
 		public function addBaseObject(baseObject:BaseObject):void
 		{
 			newBaseObjects.addItem(baseObject);
 		}
 		
+		// Add BaseObject into collection of new removed objects
 		public function removeBaseObject(baseObject:BaseObject):void
 		{
 			removedBaseObjects.addItem(baseObject);
 		}
 	
+		// Refresh objects orders drawing
 		public function refreshObjects():void
 		{
 			var sort:Sort = new Sort();
@@ -147,6 +157,7 @@ package Core
 			baseObjects.refresh();	
 		}
 		
+		// Removes all game objects
 		protected function shutdownAll():void
 		{
 			// don't dispose objects twice
@@ -167,6 +178,7 @@ package Core
 			}
 		}
 		
+		// Insert new base objects
 		protected function insertNewBaseObjects():void
 		{
 			// insert the object acording to it's Z position
@@ -187,6 +199,7 @@ package Core
 			newBaseObjects.removeAll();
 		}
 		
+		// Removed base objects that were marked for deleting
 		protected function removeDeletedBaseObjects():void
 		{			
 			for each (var removedObject:BaseObject in removedBaseObjects)

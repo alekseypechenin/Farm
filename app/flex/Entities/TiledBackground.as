@@ -19,13 +19,27 @@ package Entities
 	// Crates main landshaft
 	public class TiledBackground extends GameObject
 	{
+		// Field size attributes
 		public const maxObjectWidth:int = 100;
 		public const maxObjectHeight:int = 54;
+	
+		// MaxOffsets
+		public var xMaxOffset:Number = 0;
+		public var yMaxOffset:Number = 0;		
+		// Background Offsets		
+		public var xOffset:Number = 0;
+		public var yOffset:Number = 0;		
+		// Resource pool of Fields object
+		public var fieldsObjects:ArrayCollection = new ArrayCollection();
+
+		// Offset field attributes. Determines global objects offset in accordance with background
 		private const objectsGlobalOffsetX:int = -5;
-		private const objectsGlobalOffsetY:int = 22; 
+		private const objectsGlobalOffsetY:int = 22;
+		
+		// Max size of 'Field' objects array
 		private const maxMatrixX:int = 15;
 		private const maxMatrixY:int = 27
-		
+	
 		// Determines that unusable objects should be deleted (field state == field max state) 
 		private var needDeleteUnusableObjects:Boolean = false;
 		
@@ -34,18 +48,7 @@ package Entities
 			
 		// Request manager. Allows to call HTTP request
 		private var requestManager:RequestManager = null;
-		
-		// Background Offsets		
-		public var xOffset:Number = 0;
-		public var yOffset:Number = 0;
-		
-		// MaxOffsets
-		public var xMaxOffset:Number = 0;
-		public var yMaxOffset:Number = 0;
-		
-		// Resource pool of Fields object
-		public var fieldsObjects:ArrayCollection = new ArrayCollection();
-		
+				
 		// The background moving feature variables 	
 		private var prevMousePoint: Point = null;
 		private var wasMoving:Boolean = false;
@@ -59,61 +62,16 @@ package Entities
 		public function TiledBackground()
 		{
 			super(this, new Point(0,0),ZOrders.BACKGROUNDZORDER);
-		}
-		
-		// Initialize method. Occures only when object initializing is completed
-		override public function InitializeComplited():void
-		{
-			xMaxOffset = this.graphics.drawRect.width - Application.application.width;
-			yMaxOffset = this.graphics.drawRect.height - Application.application.height;					
-			xOffset = xMaxOffset / 2;
-			yOffset = yMaxOffset / 2;
 			
-			mousePointer = new GameObject(this,new Point(0,0),1);			
-			var reqManager:ResourcesLoader = new ResourcesLoader(mousePointer);
-			reqManager.load(ResourceManager.MousePointerID1);			
-			mousePointer.hidden = true;	
-						
-			requestManager = new RequestManager(resultHandler,faultHandler);		
-			requestManager.requestQuery(RequestManager.RETURNSALLGIVES);		
-			requestManager.requestSend();
+			var loadManager:ResourcesLoader = new ResourcesLoader(GameObjectManager.Instance.serverAddress,this);
+			loadManager.securityErrorHandler = securityErrorHandler;
+			loadManager.ioErrorHandler = ioErrorHandler;		
+			loadManager.load(ResourceManager.BackGroundID1);
 		}
 		
-		// RequestManager Fault event handler 
-		private function faultHandler(event:FaultEvent):void
-		{
-			Alert.show(event.fault.faultString, event.fault.faultCode);
-		}	
-	
-		// RequestManager Result event handler 				
-		private function resultHandler(event:ResultEvent):void
-		{
-			var fieldsAsXML:XML = event.result as XML;
+		// 'Logic' methods
+		//----------------------------
 				
-			if (!fieldsAsXML.hasSimpleContent())
-			{
-				var fields:XMLList = fieldsAsXML..field;
-				
-				if (fields.length() == 0) 
-				{
-					// Assume that xml contains only one node
-					updateFieldObjects(new XMLList(fieldsAsXML));
-				}
-				else
-				{
-					updateFieldObjects(fields);
-				}
-			}
-			
-			// Here we assume that the 'take' commands was started and we should delete unusable
-			// objects
-			if (needDeleteUnusableObjects)
-			{
-				needDeleteUnusableObjects = false;
-				deleteUnusableFieldObjects();
-			}
-		}
-		
 		// Update fields in accordance with new XML data
 		public function updateFieldObjects(fieldsData: XMLList):void
 		{		
@@ -155,12 +113,14 @@ package Entities
 				
 				if (needLoadResouce)
 				{		
-					var reqManager:ResourcesLoader = new ResourcesLoader(field);
-					reqManager.load(ResourceManager.getResourceFromPool(fieldData.ftype,fieldData.fstate));			
+					var loadManager:ResourcesLoader = new ResourcesLoader(GameObjectManager.Instance.serverAddress,field);
+					loadManager.securityErrorHandler = securityErrorHandler;
+					loadManager.ioErrorHandler = ioErrorHandler;		
+					loadManager.load(ResourceManager.getResourceFromPool(fieldData.ftype,fieldData.fstate));
 				}
 			}		
 		}
-		
+								
 		// Delete unusable objects
 		public function deleteUnusableFieldObjects():void
 		{
@@ -217,6 +177,81 @@ package Entities
 			return null;
 		}
 		
+		// Get field object screen position
+		public function getObjectScreenPosition(matrixPosition: Point): Point
+		{
+			var worldPosition:Point = getObjectWolrdPosition(matrixPosition)
+			
+			return new Point( 
+				worldPosition.x - xOffset,
+				worldPosition.y - yOffset)
+		}
+		
+		// Get game object world position in accordance with matrix position
+		public function getObjectWolrdPosition(matrixPosition:Point): Point
+		{
+			var objectPosition: Point;
+			if (matrixPosition.y % 2 == 0)
+			{
+				 objectPosition = new Point
+							(matrixPosition.x * maxObjectWidth + objectsGlobalOffsetX,
+							matrixPosition.y * maxObjectHeight/2 + objectsGlobalOffsetY);	
+			}
+			else
+			{
+				objectPosition = new Point
+							(matrixPosition.x * maxObjectWidth + maxObjectWidth/2 + objectsGlobalOffsetX,
+							matrixPosition.y *maxObjectHeight/2 + objectsGlobalOffsetY);				
+			} 
+			return new Point(objectPosition.x ,objectPosition.y);
+		}
+		
+		// Get matrix position of mouse pointer in accordance with screen mouse pointer
+		public function getMatrixPosition(worldPosition: Point):Point
+		{
+			// As default = Undefined
+			var _globalMatrixPosition:Point = new Point(-1,-1);
+			
+			// Min side of object
+			var squareMinSide:Number = Math.min(maxObjectWidth,maxObjectHeight);
+						
+			// Min length of Mouse pointer and objects position
+			var minLength: Number = Number.MAX_VALUE;
+						
+			for (var i:int = 0; i < 15; ++i){			
+			for (var j:int = 0; j < 27; ++j){															
+					var objectPosition:Point = getObjectWolrdPosition(new Point(i,j));
+					var objectCenter:Point = new Point
+							(objectPosition.x + maxObjectWidth / 2,
+							objectPosition.y + maxObjectHeight / 2);
+							
+					var diffX:Number = objectCenter.x - worldPosition.x
+					var diffY:Number = objectCenter.y - worldPosition.y
+					
+					var lengthMouseFromObjectCenter: Number = 
+					Math.sqrt(diffX*diffX + diffY*diffY);
+					
+					minLength = Math.min(lengthMouseFromObjectCenter,minLength);
+					
+					if (lengthMouseFromObjectCenter <= squareMinSide/2)
+					{														
+						_globalMatrixPosition = new Point(i,j);
+						return _globalMatrixPosition;
+					}				
+				}										
+			}	
+			return _globalMatrixPosition;
+		}
+			
+		// Get object Z order 
+		public function getZOrder(matrixPosition:Point):int
+		{
+			return matrixPosition.x + matrixPosition.y * maxMatrixX;
+		}
+		
+		// 'Field' object changing methods
+		//----------------------------
+			
 		// Add field
 		public function addFieldObject():void
 		{
@@ -232,22 +267,6 @@ package Entities
 			else
 			{
 				Alert.show("Вы не можете сажать на этом участке поля.");
-			}
-		}
-		
-		// Update field
-		public function updateFieldObject(fieldObject: FieldObject):void
-		{
-			if (getFieldObjects(mousePointer.position) == null)
-			{
-				requestManager.requestQuery(
-						RequestManager.UPDATEGIVES,
-						{id: fieldObject.id, x: mousePointer.position.x,y: mousePointer.position.y});		
-				requestManager.requestSend();
-			}
-			else
-			{
-				Alert.show("Этот участок поля уже занят.");
 			}
 		}
 		
@@ -301,82 +320,108 @@ package Entities
 			}
 		}
 		
-		// Get field object screen position
-		public function getObjectScreenPosition(matrixPosition: Point): Point
+		// Update fields in accordance with field object
+		public function updateFieldObject(fieldObject: FieldObject):void
 		{
-			var worldPosition:Point = getObjectWolrdPosition(matrixPosition)
-			
-			return new Point( 
-				worldPosition.x - xOffset,
-				worldPosition.y - yOffset)
-		}
-		
-		// Get game object world position in accordance with matrix position
-		public function getObjectWolrdPosition(matrixPosition:Point): Point
-		{
-			var objectPosition: Point;
-			if (matrixPosition.y % 2 == 0)
+			if (getFieldObjects(mousePointer.position) == null)
 			{
-				 objectPosition = new Point
-							(matrixPosition.x * maxObjectWidth + objectsGlobalOffsetX,
-							matrixPosition.y * maxObjectHeight/2 + objectsGlobalOffsetY);	
+				requestManager.requestQuery(
+						RequestManager.UPDATEGIVES,
+						{id: fieldObject.id, x: mousePointer.position.x,y: mousePointer.position.y});		
+				requestManager.requestSend();
 			}
 			else
 			{
-				objectPosition = new Point
-							(matrixPosition.x * maxObjectWidth + maxObjectWidth/2 + objectsGlobalOffsetX,
-							matrixPosition.y *maxObjectHeight/2 + objectsGlobalOffsetY);				
-			} 
-			return new Point(objectPosition.x ,objectPosition.y);
+				Alert.show("Этот участок поля уже занят.");
+			}
 		}
 		
-		// Get matrix position of mouse pointer in accordance with world mouse pointer
-		public function getMatrixPosition(worldPosition: Point):Point
+		// Resource Manager handlers
+		//----------------------------
+		
+		// RequestManager Fault event handler 
+		private function faultHandler(event:FaultEvent):void
 		{
-			// As default = Undefined
-			var _globalMatrixPosition:Point = new Point(-1,-1);
+			trace(this + "RequestManager faultHandler: " + event);
+			GameObjectManager.Instance.lastError =  event.fault.message;
+		}	
+	
+		// RequestManager Result event handler 				
+		private function resultHandler(event:ResultEvent):void
+		{
+			var fieldsAsXML:XML = event.result as XML;
+				
+			if (!fieldsAsXML.hasSimpleContent())
+			{
+				var fields:XMLList = fieldsAsXML..field;
+				
+				if (fields.length() == 0) 
+				{
+					// Assume that xml contains only one node
+					updateFieldObjects(new XMLList(fieldsAsXML));
+				}
+				else
+				{
+					updateFieldObjects(fields);
+				}
+			}
 			
-			// Min side of object
-			var squareMinSide:Number = Math.min(maxObjectWidth,maxObjectHeight);
-						
-			// Min length of Mouse pointer and objects position
-			var minLength: Number = Number.MAX_VALUE;
-						
-			for (var i:int = 0; i < 15; ++i){			
-			for (var j:int = 0; j < 27; ++j){															
-					var objectPosition:Point = getObjectWolrdPosition(new Point(i,j));
-					var objectCenter:Point = new Point
-							(objectPosition.x + maxObjectWidth / 2,
-							objectPosition.y + maxObjectHeight / 2);
-							
-					var diffX:Number = objectCenter.x - worldPosition.x
-					var diffY:Number = objectCenter.y - worldPosition.y
-					
-					var lengthMouseFromObjectCenter: Number = 
-					Math.sqrt(diffX*diffX + diffY*diffY);
-					
-					minLength = Math.min(lengthMouseFromObjectCenter,minLength);
-					
-					if (lengthMouseFromObjectCenter <= squareMinSide/2)
-					{														
-						_globalMatrixPosition = new Point(i,j);
-						return _globalMatrixPosition;
-					}				
-				}										
-			}	
-			return _globalMatrixPosition;
+			// Here we assume that the 'take' commands was started and we should delete unusable
+			// objects
+			if (needDeleteUnusableObjects)
+			{
+				needDeleteUnusableObjects = false;
+				deleteUnusableFieldObjects();
+			}
 		}
 		
-		// Get object Z order 
-		public function getZOrder(matrixPosition:Point):int
+		
+		// ResourceLoader handlers
+		//----------------------------
+		
+		// Resourece loader Security Error handler
+        private function securityErrorHandler(event:SecurityErrorEvent):void
+        {
+            trace(this + "securityErrorHandler: " + event);
+            GameObjectManager.Instance.lastError =  event.text;
+        }
+
+		// Resourece loader ioError handler
+        private function ioErrorHandler(event:IOErrorEvent):void
+        {
+            trace(this + "ioErrorHandler: " + event);
+            GameObjectManager.Instance.lastError =  event.text;
+        }
+	
+		
+		// Override methods
+		//----------------------------
+			
+		// Initialize method. Occures only when object initializing is completed
+		override public function InitializeComplited():void
 		{
-			return matrixPosition.x + matrixPosition.y * maxMatrixX;
+			xMaxOffset = this.graphics.drawRect.width - Application.application.width;
+			yMaxOffset = this.graphics.drawRect.height - Application.application.height;					
+			xOffset = xMaxOffset / 2;
+			yOffset = yMaxOffset / 2;
+			
+			mousePointer = new GameObject(this,new Point(0,0),1);			
+			var loadManager:ResourcesLoader = new ResourcesLoader(GameObjectManager.Instance.serverAddress,mousePointer);
+			loadManager.securityErrorHandler = securityErrorHandler;
+			loadManager.ioErrorHandler = ioErrorHandler;		
+			loadManager.load(ResourceManager.MousePointerID1);			
+			mousePointer.hidden = true;	
+						
+			requestManager = new RequestManager(GameObjectManager.Instance.serverAddress,resultHandler,faultHandler);		
+			requestManager.requestQuery(RequestManager.RETURNSALLGIVES);		
+			requestManager.requestSend();
 		}
-		
+
 		// Removes object
 		override public function shutdown():void
 		{
-			mousePointer.shutdown();
+			if (mousePointer != null )
+				mousePointer.shutdown();
 			super.shutdown();
 		}
 		
@@ -474,7 +519,7 @@ package Entities
 									dragginObject.state
 									);
 							
-						mouseDragAndDropObject.useDraggingBitmap = true;
+						mouseDragAndDropObject.onDragged = true;
 						mouseDragAndDropObject.graphics = dragginObject.graphics;
 					}
 				}
