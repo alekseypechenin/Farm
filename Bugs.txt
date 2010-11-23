@@ -92,5 +92,5 @@ FAFlex 10008:
 	Dragged object is not corret drawed in ZOrder.
  	Last log: 11/23/2010
 	Priority:1
-	Status: Active
+	Status: Fixed
 ------------------------------------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ package Entities
 		// Determines if object was deleted 
 		public var inuse:Boolean = false;		
 		// Object Z Order
-		public var zOrder:int = 0;
+		private var _zOrder:int = 0;
 		// Determine whether object is drawing or not 
 		public var hidden:Boolean = false;
 				
@@ -20,7 +20,7 @@ package Entities
 		public function BaseObject(zOrder:int)
 		{
 			this.inuse = true;
-			this.zOrder = zOrder;
+			this._zOrder = zOrder;
 			GameObjectManager.Instance.addBaseObject(this);			
 		}
 		
@@ -32,6 +32,19 @@ package Entities
 				this.inuse = false;
 				GameObjectManager.Instance.removeBaseObject(this);
 			}
+		}
+		
+		// Get property of zOrder value
+		public function get zOrder():int
+		{
+			return this._zOrder
+		}
+		
+		// Get property of zOrder value
+		public function set zOrder(value:int):void
+		{
+			this._zOrder = value;
+			GameObjectManager.Instance.refreshObjects();
 		}
 		
 		// Ovveride this methods if yuo want implement functionality fo them

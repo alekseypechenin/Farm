@@ -61,6 +61,7 @@ package Entities
 			super(this, new Point(0,0),ZOrders.BACKGROUNDZORDER);
 		}
 		
+		// Initialize method. Occures only when object initializing is completed
 		override public function InitializeComplited():void
 		{
 			xMaxOffset = this.graphics.drawRect.width - Application.application.width;
@@ -148,7 +149,8 @@ package Entities
 						needLoadResouce = true;
 						field.state = fieldData.fstate;
 					}
-					field.position = new Point(fieldData.x,fieldData.y);
+					field.position = fieldPosition;
+					field.zOrder = getZOrder(fieldPosition);
 				}
 				
 				if (needLoadResouce)
@@ -490,6 +492,7 @@ package Entities
 				if (mouseDragAndDropObject != null)
 			{
 					mouseDragAndDropObject.position = globalMatrixPosition;
+					mouseDragAndDropObject.zOrder = getZOrder(globalMatrixPosition);
 				}
 			}
 		}

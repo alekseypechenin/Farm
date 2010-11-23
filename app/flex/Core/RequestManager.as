@@ -5,8 +5,7 @@ package Core
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.HTTPService; 
-
-    		
+	
 	public final class RequestManager	
 	{
 		public static const METHOD_POST:String = "POST";		

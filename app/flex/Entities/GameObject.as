@@ -21,7 +21,6 @@ package Entities
 		// World tile layer.
 	    private var tiledBackground:TiledBackground = null;
 	  
-		
 		public function GameObject(tiledBackground:TiledBackground,position:Point, zOrder:int = 0)
 		{
 			super(zOrder);

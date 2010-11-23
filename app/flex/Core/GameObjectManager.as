@@ -16,10 +16,8 @@ package Core
 		public var backBuffer:BitmapData;
 		// Server Url Address. Default = 
 		public var serverAddress: String = "http://localhost:3000/";
-		
 		// Last errors
-		private var lastError:String = null;
-		
+		private var lastError:String = null;	
 		// colour to use to clear backbuffer with	 
 		private var clearColor:uint = 0x000000;
 		// static instance 
@@ -139,6 +137,15 @@ package Core
 		{
 			removedBaseObjects.addItem(baseObject);
 		}
+	
+		public function refreshObjects():void
+		{
+			var sort:Sort = new Sort();
+			var sortByZOrder:SortField = new SortField("zOrder",true,false,true);
+			sort.fields = [sortByZOrder];
+			baseObjects.sort = sort;
+			baseObjects.refresh();	
+		}
 		
 		protected function shutdownAll():void
 		{
@@ -162,7 +169,7 @@ package Core
 		
 		protected function insertNewBaseObjects():void
 		{
-			// insert the object acording to it's z position
+			// insert the object acording to it's Z position
 			for each (var baseObject:BaseObject in newBaseObjects)
 			{
 				for (var i:int = 0; i < baseObjects.length; ++i)
@@ -198,6 +205,6 @@ package Core
 			
 			removedBaseObjects.removeAll();
 		}
-			
+	
 	}
 }
