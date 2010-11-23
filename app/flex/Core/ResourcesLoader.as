@@ -86,7 +86,6 @@ package Core
            dispatcher.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
         }
 
-		
         private function completeHandler(event:Event):void
         {
         	_complited = true;

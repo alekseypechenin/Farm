@@ -120,15 +120,10 @@ class FieldsController < ApplicationController
   # PUT /fields/1.xml
   def update
     @field = Field.find(params[:id])
-
-    respond_to do |format|
-      if @field.update_attributes(params[:field])
-        format.html { redirect_to(@field, :notice => 'Field was successfully updated.') }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @field.errors, :status => :unprocessable_entity }
-      end
+    if @field.update_attributes(x: params[:x],y: params[:y])
+       render :xml => @field
+     else
+       render :xml => @field.errors
     end
   end
   

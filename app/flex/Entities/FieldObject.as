@@ -25,10 +25,12 @@ package Entities
 	    public function FieldObject(tiledBackground:TiledBackground,
 	    						    position:Point,	    					
 	    						    zOrder:int,
+	    						    id:int,
 	    						    type:String,
 	    						    state:int)
 		{
 			super(tiledBackground,position,zOrder);
+			this.id = id;
 			this.state = state;											
 			this.type = type;
 		}		  

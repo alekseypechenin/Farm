@@ -52,7 +52,9 @@ package Entities
 		
 		// Mouse Pointer 
 		private var mousePointer: GameObject = null;
-						
+		// Mouse Pointer Drag and drop
+		private var mouseDragAndDropObject: GameObject = null;
+				
 		// Constructor	
 		public function TiledBackground()
 		{
@@ -68,7 +70,7 @@ package Entities
 			
 			mousePointer = new GameObject(this,new Point(0,0),1);			
 			var reqManager:ResourcesLoader = new ResourcesLoader(mousePointer);
-			reqManager.load(ResourceManager.CloverID1);			
+			reqManager.load(ResourceManager.MousePointerID1);			
 			mousePointer.hidden = true;	
 						
 			requestManager = new RequestManager(resultHandler,faultHandler);		
@@ -120,29 +122,37 @@ package Entities
 			for each (fieldData in fieldsData) 
 			{
 				var fieldPosition:Point = new Point(Number(fieldData.x),Number(fieldData.y))
+				var needLoadResouce:Boolean = false;
 				
 				// Debug information
 				trace(fieldData.x,fieldData.y,fieldData.ftype,fieldData.fstate);
 				
-				field = getFieldObjects(new Point(fieldData.x,fieldData.y));
+				field = getFieldObjectsByID(fieldData.id);
 				
-				if ((field == null) || (field != null && field.state != fieldData.fstate))
+				if (field == null)
 				{
-					if (field == null)
-					{
-						field = new FieldObject(
+					needLoadResouce = true;
+					field = new FieldObject(
 								this,
 								fieldPosition,
 								getZOrder(fieldPosition),
+								fieldData.id,
 								fieldData.ftype,
 								fieldData.fstate)
-						fieldsObjects.addItem(field);
-					}
-					else
+					fieldsObjects.addItem(field);
+				}
+				else 
+				{
+					if (field.state != fieldData.fstate)
 					{
+						needLoadResouce = true;
 						field.state = fieldData.fstate;
 					}
-					
+					field.position = new Point(fieldData.x,fieldData.y);
+				}
+				
+				if (needLoadResouce)
+				{		
 					var reqManager:ResourcesLoader = new ResourcesLoader(field);
 					reqManager.load(ResourceManager.getResourceFromPool(fieldData.ftype,fieldData.fstate));			
 				}
@@ -176,7 +186,7 @@ package Entities
 			}	
 		}
 		
-		// Get field object in accordance with matrixPosition
+		// Get field object in accordance with matrixPosition or its ID value
 		public function getFieldObjects(matrixPosition: Point): FieldObject
 		{
 			var fieldObject:FieldObject;
@@ -184,6 +194,20 @@ package Entities
 			{
 				if (fieldObject.position.x == matrixPosition.x
 					&& fieldObject.position.y == matrixPosition.y)
+				{
+					return fieldObject;
+				}
+			} 
+			return null;
+		}
+		
+		// Get field object in accordance Field ID value
+		public function getFieldObjectsByID(fieldID: Number): FieldObject
+		{
+			var fieldObject:FieldObject;
+			for each (fieldObject in fieldsObjects)
+			{
+				if (fieldObject.id == fieldID)
 				{
 					return fieldObject;
 				}
@@ -206,6 +230,22 @@ package Entities
 			else
 			{
 				Alert.show("Вы не можете сажать на этом участке поля.");
+			}
+		}
+		
+		// Update field
+		public function updateFieldObject(fieldObject: FieldObject):void
+		{
+			if (getFieldObjects(mousePointer.position) == null)
+			{
+				requestManager.requestQuery(
+						RequestManager.UPDATEGIVES,
+						{id: fieldObject.id, x: mousePointer.position.x,y: mousePointer.position.y});		
+				requestManager.requestSend();
+			}
+			else
+			{
+				Alert.show("Этот участок поля уже занят.");
 			}
 		}
 		
@@ -383,7 +423,14 @@ package Entities
 				{
 					CommandState.State = CommandState.Give;
 				}
-			} 
+			}
+			
+			if (mouseDragAndDropObject != null)
+			{
+				mouseDragAndDropObject.shutdown();
+				updateFieldObject(FieldObject(mouseDragAndDropObject));
+				mouseDragAndDropObject = null;
+			}
 		}
 		
 		// MouseMove event handler
@@ -391,29 +438,58 @@ package Entities
 		{	
 			event.target is Canvas ? mousePointer.hidden = false 
 									: mousePointer.hidden = true;
-				
-			if (!mousePointer.hidden)
+			
+			// We should not do any operations if mouse pointer is hidden						 	
+			if (mousePointer.hidden)
+			{ 
+				return;
+			}
+		
+			if (event.buttonDown)
 			{
-				if (event.buttonDown)
+				wasMoving =true; 
+				if (!event.altKey)
 				{
-					wasMoving =true; 
 					var newXOffset: Number = event.localX - prevMousePoint.x;
 					var newYOffset: Number = event.localY - prevMousePoint.y;
-					
+						
 					xOffset += -newXOffset;
 					yOffset += -newYOffset;
-					
 					prevMousePoint = new Point(event.localX, event.localY);
+					
 				}
+				else
+				if (mouseDragAndDropObject == null)
+				{
+					var dragginObject:FieldObject = getFieldObjects(globalMatrixPosition);
+					
+					if (dragginObject != null)
+					{
+						mouseDragAndDropObject = new FieldObject(
+									this,globalMatrixPosition,ZOrders.DRAGANDDROPOBJECT,
+									dragginObject.id,
+									dragginObject.type,
+									dragginObject.state
+									);
+							
+						mouseDragAndDropObject.useDraggingBitmap = true;
+						mouseDragAndDropObject.graphics = dragginObject.graphics;
+					}
+				}
+			}
 				
-				globalMatrixPosition = getMatrixPosition(
-											new Point(event.localX + xOffset,
-											event.localY + yOffset))
+			globalMatrixPosition = getMatrixPosition(
+										new Point(event.localX + xOffset,
+										event.localY + yOffset))
 											
-				if (globalMatrixPosition.x != -1 && globalMatrixPosition.y != -1)
-				{			
-					mousePointer.position = globalMatrixPosition;
-					mousePointer.hidden = false;
+			if (globalMatrixPosition.x != -1 && globalMatrixPosition.y != -1)
+			{			
+				mousePointer.position = globalMatrixPosition;
+				mousePointer.hidden = false;
+					
+				if (mouseDragAndDropObject != null)
+			{
+					mouseDragAndDropObject.position = globalMatrixPosition;
 				}
 			}
 		}

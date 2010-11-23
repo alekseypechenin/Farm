@@ -12,6 +12,7 @@ package Core
 		// BackGround
 		
 		public static var BackGroundID1:String = "Media/Tiles/BG.jpg";
+		public static var MousePointerID1:String = "Media/Tiles/MousePointer.png";
 		
 		// Potato			
 		

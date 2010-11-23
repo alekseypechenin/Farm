@@ -12,8 +12,11 @@ package Entities
 	{
 		// object position
 		public var position:Point = new Point(0, 0);
+		//
+		public var useDraggingBitmap:Boolean = false;
+		
 		// the bitmap data to display	
-		public var _graphics:GraphicsResource = null;
+		private var _graphics:GraphicsResource = null;
 		
 		// World tile layer.
 	    private var tiledBackground:TiledBackground = null;
@@ -58,8 +61,15 @@ package Entities
 			var screenPos:Point = tiledBackground.getObjectScreenPosition(new Point(position.x,position.y));			
 			var screenPosInAccordanceWithHeigh: Point = new Point(
 				 screenPos.x ,
-				 screenPos.y - (this.graphics.drawRect.height - tiledBackground.maxObjectHeight));				
-			db.copyPixels(graphics.bitmap, graphics.bitmap.rect, screenPosInAccordanceWithHeigh, graphics.bitmapAlpha, new Point(0, 0), true);
+				 screenPos.y - (this.graphics.drawRect.height - tiledBackground.maxObjectHeight));
+			if (!useDraggingBitmap)
+			{				
+				db.copyPixels(graphics.bitmap, graphics.bitmap.rect, screenPosInAccordanceWithHeigh, graphics.bitmapAlpha, new Point(0, 0), true);
+			}
+			else
+			{
+				db.copyPixels(graphics.bitmap, graphics.bitmap.rect, screenPosInAccordanceWithHeigh, graphics.draggingBitmapAlpha, new Point(0, 0), true);
+			}
 		}	
 		
 		public function InitializeComplited():void { }				

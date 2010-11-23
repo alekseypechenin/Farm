@@ -57,7 +57,7 @@
     	mouseDown="mouseDown(event)"
     	mouseUp="mouseUp(event)"
     	mouseMove="mouseMove(event)"
-		x="0" y="0" width="100%" height="100%" id="myCanvas"/>
+		x="0" y="0" width="100%" height="100%" id="myCanvas" />
 		
 	<mx:ProgressBar id="progressBar" visible="false" label="Загрузка... (%3%%)" mode="manual" labelPlacement="center" maximum="100" alpha="0.4" barColor="Green" bottom="10" left="200"/>
 	<mx:Label right="30" bottom="10" fontWeight="bold" text="Demo version" />
