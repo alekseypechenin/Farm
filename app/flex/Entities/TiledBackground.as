@@ -486,9 +486,29 @@ package Entities
 		
 		// MouseDown event handler 
 		override public function mouseDown(event:MouseEvent):void
-		{			
+		{		
+			// We should not do any operations if mouse pointer is hidden						 	
+			if (mousePointer.hidden)
+			{ 
+				return;
+			}
+				
 			prevMousePoint = new Point(event.localX, event.localY);
 			wasMoving = false;
+			
+			var dragginObject:FieldObject = getFieldObjects(globalMatrixPosition);
+			if (dragginObject != null)
+			{
+				mouseDragAndDropObject = new FieldObject(
+							this,globalMatrixPosition,getZOrder(globalMatrixPosition),
+							dragginObject.id,
+							dragginObject.type,
+							dragginObject.state
+							);
+							
+				mouseDragAndDropObject.onDragged = true;
+				mouseDragAndDropObject.graphics = dragginObject.graphics;
+			}		
 		}
 		
 		// MouseUp event handler 
@@ -506,6 +526,7 @@ package Entities
 					{
 						CommandState.State = CommandState.Take;
 					}
+					return;
 				}
 			}
 			
@@ -531,8 +552,8 @@ package Entities
 		
 			if (event.buttonDown)
 			{
-				wasMoving =true; 
-				if (!event.altKey)
+				wasMoving = true; 
+				if (mouseDragAndDropObject == null)
 				{
 					var newXOffset: Number = event.localX - prevMousePoint.x;
 					var newYOffset: Number = event.localY - prevMousePoint.y;
@@ -541,24 +562,6 @@ package Entities
 					yOffset += -newYOffset;
 					prevMousePoint = new Point(event.localX, event.localY);
 					
-				}
-				else
-				if (mouseDragAndDropObject == null)
-				{
-					var dragginObject:FieldObject = getFieldObjects(globalMatrixPosition);
-					
-					if (dragginObject != null)
-					{
-						mouseDragAndDropObject = new FieldObject(
-									this,globalMatrixPosition,getZOrder(globalMatrixPosition),
-									dragginObject.id,
-									dragginObject.type,
-									dragginObject.state
-									);
-							
-						mouseDragAndDropObject.onDragged = true;
-						mouseDragAndDropObject.graphics = dragginObject.graphics;
-					}
 				}
 			}
 				
@@ -570,12 +573,12 @@ package Entities
 			{			
 				mousePointer.position = globalMatrixPosition;
 				mousePointer.hidden = false;
-					
-				if (mouseDragAndDropObject != null)
+			}
+			
+			if (mouseDragAndDropObject != null)
 			{
 					mouseDragAndDropObject.position = globalMatrixPosition;
 					mouseDragAndDropObject.zOrder = getZOrder(globalMatrixPosition);
-				}
 			}
 		}
 						
