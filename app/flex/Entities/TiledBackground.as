@@ -491,6 +491,7 @@ package Entities
 					break;
 			}
 			
+			ResourcesLoader.clearStack();
 		}
 		
 		// MouseDown event handler 

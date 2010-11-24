@@ -2,19 +2,26 @@ package Core
 {
 	// Namespaces
 	import Entities.GameObject;
+	
 	import Utils.GraphicsResource;
+	
 	import flash.display.Loader;
 	import flash.events.*;
 	import flash.net.*;
 	import flash.utils.*;
-	import mx.controls.ProgressBar;
+	
+	import mx.collections.ArrayCollection;
 	
 	// Represents logic that allows to communicate with Server and obtain image data
 	// It is wrapper of URLLoader object with additionally functions 
 	public class ResourcesLoader
 	{
-		// Keep alredy loaded object
+		// Keep already loaded object
 		static public var resourcePool:Dictionary = new Dictionary;
+		// Keep stack of objects that want to load image that currently is loading
+		static public var loadersStack:ArrayCollection = new ArrayCollection;
+		// Keep stack of resource names that currently was triggred
+		static public var resourceStack:Dictionary = new Dictionary;
 		
 		// Callback for result Handler
 		public var securityErrorHandler:Function;
@@ -23,7 +30,7 @@ package Core
 		public var ioErrorHandler:Function;
 		
 		// Represent image resource name
-		private var resourceName:String = null;
+		public var resourceName:String = null;
 		
 		// URLLoader object. Helps our to obtains image data.
 		private var loader:URLLoader = new URLLoader();
@@ -50,14 +57,48 @@ package Core
 		{
 			this.configureListeners(loader);
 			this.resourceName = resourceName;
-		
+			
 			if (resourcePool[resourceName] != null)
 			{
 				this.gameObject.graphics = resourcePool[resourceName];
 				return;
 			} 
 			
+			if (resourceStack[resourceName] != null)
+			{
+				loadersStack.addItem(this);
+				return;
+			}
+			
+			resourceStack[resourceName] = true;
+			
 			this.loader.load(new URLRequest(configureURL(resourceName)));
+		}
+	
+		// Load images that in the stack
+		public static function clearStack():void
+		{
+			if (loadersStack.length > 0)
+			{
+				var needCheck:Boolean = true;
+				while (needCheck)
+				{
+					needCheck = false;
+					var i:int;
+					for (i=0; i<loadersStack.length; i++)
+					{
+						var loaders:ResourcesLoader = loadersStack[i] as ResourcesLoader;
+						
+						if (loaders != null && resourcePool[loaders.resourceName] != null)
+						{
+							// Founded!!!
+							needCheck = true;
+							loaders.gameObject.graphics = resourcePool[loaders.resourceName];
+							loadersStack.removeItemAt(i);
+						}
+					}
+				}
+			}
 		}
 	
 		// Returns request URL = Server URL + Image resource name
