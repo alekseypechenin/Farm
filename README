@@ -1,1 +1,29 @@
 The flex Farm game on Rails engine.
+Currently the application was tested on WINDOWS 7 version
+
+Before using this game we should
+
+1) install Ruby framework on your box.
+    http://projectsprouts.org/
+
+2) then, you should install Rails gem.
+    gem install rails
+
+3) install postgres datebase.
+
+4) Goto into your application root folder and run the following rake command
+    rake db:Greate
+
+5) Migrate model object to database
+    rake db:migrate
+
+6) Start rails
+    rails server from root project folder
+
+IMPORTANT NOTES:
+--------------------------------------------
+The default URL server for flex client it is
+    http://localhost:3000/
+
+For using another server we should pass URL value as parameter "serverURL"
+Please be sure that your URL string is ending with '/' symbols.

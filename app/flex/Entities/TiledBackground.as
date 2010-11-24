@@ -242,19 +242,24 @@ package Entities
 		// Add field
 		public function addFieldObject():void
 		{
-			if (getFieldObjects(mousePointer.position) == null)
+			if (!overBackgroundBounds(mousePointer.position))
 			{
-				var givesType:String = GivesState.stateToString();
-					
-				requestManager.requestQuery(
-						RequestManager.ADDGIVE,
-						{ftype: givesType, x: mousePointer.position.x,y: mousePointer.position.y});		
-				requestManager.requestSend();
+				Alert.show("Нельзя выносить объект за пределы.");
+				return;
 			}
-			else
+			
+			if (getFieldObjects(mousePointer.position) != null)
 			{
 				Alert.show("Вы не можете сажать на этом участке поля.");
+				return;
 			}
+			
+			var givesType:String = GivesState.stateToString();
+					
+			requestManager.requestQuery(
+					RequestManager.ADDGIVE,
+					{ftype: givesType, x: mousePointer.position.x,y: mousePointer.position.y});		
+			requestManager.requestSend();
 		}
 		
 		// Grows fields
@@ -306,18 +311,68 @@ package Entities
 		// Update fields in accordance with field object
 		public function updateFieldObject(fieldObject: FieldObject):void
 		{
-			if (getFieldObjects(mousePointer.position) == null)
+			if (!overBackgroundBounds(mousePointer.position))
 			{
-				requestManager.requestQuery(
-						RequestManager.UPDATEGIVES,
-						{id: fieldObject.id, x: mousePointer.position.x,y: mousePointer.position.y});		
-				requestManager.requestSend();
+				Alert.show("Нельзя выносить объект за пределы.");
+				return;
+			}
+			
+			if (getFieldObjects(mousePointer.position) != null)
+			{
+				Alert.show("Этот участок поля уже занят.");
+				return;
+			}
+			
+			requestManager.requestQuery(
+					RequestManager.UPDATEGIVES,
+					{id: fieldObject.id, x: mousePointer.position.x,y: mousePointer.position.y});		
+			requestManager.requestSend();
+		}
+		
+		// Check bounds of game field
+		private function overBackgroundBounds(mousePosition:Point):Boolean
+		{
+			var startXpos:int = 7;
+			var startYpos:int = 2;
+			var endYpos:int = 26;
+			var middleSection:int = 6;
+			
+			var determinedMouseSection:int = (mousePosition.y - 1)/2
+			trace(determinedMouseSection)
+			
+			var determinedMaxXOffset:int;
+			var determinedMinXOffset:int;
+			
+			if (determinedMouseSection <= middleSection)
+			{
+				determinedMaxXOffset = startXpos + determinedMouseSection -1;
+				if ((mousePosition.y) % 2 != 0)
+				{
+					determinedMaxXOffset -=1;
+				}
+				
+				determinedMinXOffset = startXpos - determinedMouseSection + 1
 			}
 			else
 			{
-				Alert.show("Этот участок поля уже занят.");
+				determinedMinXOffset = startXpos - (startXpos - (determinedMouseSection - (middleSection -1)))
+				if ((mousePosition.y) % 2 == 0)
+				{
+					determinedMinXOffset +=1;
+				}
+				
+				determinedMaxXOffset = startXpos + (startXpos - (determinedMouseSection - (middleSection -2)))
 			}
+			
+			trace(determinedMinXOffset, determinedMaxXOffset)
+			trace(mousePosition.x >= determinedMinXOffset && mousePosition.x <= determinedMaxXOffset && mousePosition.y > startYpos && mousePosition.y < endYpos)
+			
+			return mousePosition.x >= determinedMinXOffset && 
+				   mousePosition.x <= determinedMaxXOffset && 
+				   mousePosition.y > startYpos && 
+				   mousePosition.y < endYpos;
 		}
+		
 		
 		// Resource Manager handlers
 		//----------------------------
@@ -510,7 +565,7 @@ package Entities
 			globalMatrixPosition = getMatrixPosition(
 										new Point(event.localX + xOffset,
 										event.localY + yOffset))
-											
+																		
 			if (globalMatrixPosition.x != -1 && globalMatrixPosition.y != -1)
 			{			
 				mousePointer.position = globalMatrixPosition;
