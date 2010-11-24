@@ -1,14 +1,10 @@
 FarmGameOnRails::Application.routes.draw do
 
   match ':controller(/:action(/:id(.:format)))'
+  root :to => "index.html"
 
   resources :fields
-
-  post 'fields/indextoclient', :controller=>'fields', :action => 'indextoclient'
-  post 'fields/createtoserver', :controller=>'fields', :action => 'createtoserver'
-
-  root :to => "fields#start"
-
+  
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

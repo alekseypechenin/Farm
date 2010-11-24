@@ -26,9 +26,9 @@
 			<mx:AddChild relativeTo="{myCanvas}" position="lastChild">
 				<mx:HBox id="hboxGives" backgroundColor="Green" borderStyle="outset" backgroundAlpha="0.7" x="{Application.application.width/2-hboxGives.width/2}" 
 						 y="{Application.application.height/2-hboxGives.height/2}" visible="false">
-					<mx:Image width="100" height="70" source="Media/Entities/potato/5.png" click="givesClicked(GivesState.Potato)" />	
-					<mx:Image width="100" height="70" source="Media/Entities/clover/5.png" click="givesClicked(GivesState.Clover)"/>
-					<mx:Image width="100" height="100" source="Media/Entities/Sunflower/5.png" click="givesClicked(GivesState.Sunflower)"/>	
+					<mx:Image width="100" height="70" source="Media/Entities/potato/potato.png" click="givesClicked(GivesState.Potato)" />	
+					<mx:Image width="100" height="70" source="Media/Entities/clover/clover.png" click="givesClicked(GivesState.Clover)"/>
+					<mx:Image width="100" height="100" source="Media/Entities/Sunflower/Sunflower.png" click="givesClicked(GivesState.Sunflower)"/>	
 				</mx:HBox>
 			</mx:AddChild>
 			</mx:State>

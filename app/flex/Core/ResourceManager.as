@@ -12,32 +12,32 @@ package Core
 	{
 		// BackGround
 		
-		public static var BackGroundID1:String = "Media/Tiles/BG.jpg";
-		public static var MousePointerID1:String = "Media/Tiles/MousePointer.png";
+		public static var BackGroundID1:String = "media/tiles/bg.jpg";
+		public static var MousePointerID1:String = "media/tiles/mousePointer.png";
 		
 		// Potato			
 		
-		public static var PotatoID1:String = "Media/Entities/potato/1.png";
-		public static var PotatoID2:String = "Media/Entities/potato/2.png";
-		public static var PotatoID3:String = "Media/Entities/potato/3.png";
-		public static var PotatoID4:String = "Media/Entities/potato/4.png";
-		public static var PotatoID5:String = "Media/Entities/potato/5.png";
+		public static var PotatoID1:String = "media/entities/potato/1.png";
+		public static var PotatoID2:String = "media/entities/potato/2.png";
+		public static var PotatoID3:String = "media/entities/potato/3.png";
+		public static var PotatoID4:String = "media/entities/potato/4.png";
+		public static var PotatoID5:String = "media/entities/potato/5.png";
 		
 		// Clover
 		
-		public static var CloverID1:String = "Media/Entities/clover/1.png";
-		public static var CloverID2:String = "Media/Entities/clover/2.png";
-		public static var CloverID3:String = "Media/Entities/clover/3.png";
-		public static var CloverID4:String = "Media/Entities/clover/4.png";
-		public static var CloverID5:String = "Media/Entities/clover/5.png";
+		public static var CloverID1:String = "media/entities/clover/1.png";
+		public static var CloverID2:String = "media/entities/clover/2.png";
+		public static var CloverID3:String = "media/entities/clover/3.png";
+		public static var CloverID4:String = "media/entities/clover/4.png";
+		public static var CloverID5:String = "media/entities/clover/5.png";
 		
 		// Sunflower
 		
-		public static var SunflowerID1:String = "Media/Entities/Sunflower/1.png";
-		public static var SunflowerID2:String = "Media/Entities/Sunflower/2.png";
-		public static var SunflowerID3:String = "Media/Entities/Sunflower/3.png";
-		public static var SunflowerID4:String = "Media/Entities/Sunflower/4.png";
-		public static var SunflowerID5:String = "Media/Entities/Sunflower/5.png";
+		public static var SunflowerID1:String = "media/entities/Sunflower/1.png";
+		public static var SunflowerID2:String = "media/entities/Sunflower/2.png";
+		public static var SunflowerID3:String = "media/entities/Sunflower/3.png";
+		public static var SunflowerID4:String = "media/entities/Sunflower/4.png";
+		public static var SunflowerID5:String = "media/entities/Sunflower/5.png";
 		
 		// Gets resource string in accordance with resType and resState  
 		public static function getResourceFromPool(resType:String, resState: int):String
