@@ -25,9 +25,9 @@ FAFlex 10001:
 FAFlex 10002: 
 	The main buttons should be in the Russin lang.
 	The backgrond should be in a Green color.
- 	Last log: 11/16/2010
+ 	Last log: 11/24/2010
 	Priority:2
-	Status: Active
+	Status: Fixed
 	
 ------------------------------------------------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ FAFlex 10004:
 FAFlex 10005: 
 	The gives object is not highlited.
  	Last log: 11/16/2010
-	Priority:1
+	Priority:2
 	Status: Active
 ------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------
@@ -65,7 +65,8 @@ FAFlex 10006:
 	The unusable resources should be deleted.
  	Last log: 11/21/2010
 	Priority:1
-	Status: Active
+	Status: Wont fix. 
+	Comments: we should not delete them otherwise some other objects will load image again. 
 ------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------------------------
@@ -74,7 +75,7 @@ FAFlex 10007:
 	Need describe ResourcesLoader type.
  	Last log: 11/21/2010
 	Priority:1
-	Status: Active
+	Status: Fixed.
 ------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 The flex Farm game on Rails engine.
 Currently the application was tested on WINDOWS 7 version
+The short view images about application you can see in doc/viewgameimages files.
+The requirements of application implementation you can see in doc/Requirements.txt file.
 
 Before using this game we should
 
@@ -27,3 +29,25 @@ The default URL server for flex client it is
 
 For using another server we should pass URL value as parameter "serverURL"
 Please be sure that your URL string is ending with '/' symbols.
+
+There are tasks that could be implemented in the future:
+
+   1) Probably we can use Sprite object as base for BaseObjects game.
+   	  Perhaps, It allows us to paint objects using more easy solution.
+   	  
+   2) Need add new game object like "Progress Bar"
+      It allows to imform user about state of image loading for game object.
+      
+   3) Need implemented "Security Checker" that allows to ignore server queries 
+      from dangerous users. 
+      Only client 'Flex' application should can to communicate with server.
+      Perhaps, this solution we can implemenent using some decripted password.
+
+   4) We can add new relation as Rastenie - Fields.
+      It allows to extend our game using more types of field object.
+     
+   5) Add user authentication.
+   
+   6) Add support to play in the game on other version of operation system.
+   
+   7) Add game strategy. 
