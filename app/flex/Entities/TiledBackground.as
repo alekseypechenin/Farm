@@ -373,6 +373,15 @@ package Entities
 				   mousePosition.y < endYpos;
 		}
 		
+		private function destroyMouseDragObject():void
+		{
+			if (mouseDragAndDropObject != null)
+			{	
+				mouseDragAndDropObject.shutdown();
+				mouseDragAndDropObject = null;
+			}
+		}
+		
 		
 		// Resource Manager handlers
 		//----------------------------
@@ -525,6 +534,7 @@ package Entities
 					else
 					{
 						CommandState.State = CommandState.Take;
+						destroyMouseDragObject();
 					}
 					return;
 				}
@@ -532,9 +542,8 @@ package Entities
 			
 			if (mouseDragAndDropObject != null)
 			{
-				mouseDragAndDropObject.shutdown();
 				updateFieldObject(FieldObject(mouseDragAndDropObject));
-				mouseDragAndDropObject = null;
+				destroyMouseDragObject();
 			}
 		}
 		
